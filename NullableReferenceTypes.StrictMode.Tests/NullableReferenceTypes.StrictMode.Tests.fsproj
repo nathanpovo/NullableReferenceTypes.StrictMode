@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+    <GenerateProgramFile>false</GenerateProgramFile>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="NullableAnalyzerTests.fs" />
+    <Compile Include="VariableTests.fs" />
+    <Compile Include="FieldTests.fs" />
+    <Compile Include="MethodTests.fs" />
+    <Compile Include="ParameterTests.fs" />
+    <Compile Include="OtherTests.fs" />
+    <Compile Include="Program.fs"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
+    <PackageReference Include="Roslynator.Testing.CSharp.Xunit" Version="4.12.0" />
+    <PackageReference Include="xunit" Version="2.5.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NullableReferenceTypes.StrictMode\NullableReferenceTypes.StrictMode.csproj" />
+  </ItemGroup>
+
+</Project>

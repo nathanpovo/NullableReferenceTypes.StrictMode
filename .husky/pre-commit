@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+dotnet husky run --name csharpier-format-staged-files
+dotnet husky run --name fantomas-format-staged-files

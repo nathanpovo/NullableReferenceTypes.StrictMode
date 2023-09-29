@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34714.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NullableReferenceTypes.StrictMode", "NullableReferenceTypes.StrictMode\NullableReferenceTypes.StrictMode.csproj", "{FCE4CBC4-E7E9-4C94-9C2E-9065D1416141}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NullableReferenceTypes.StrictMode.CodeFixes", "NullableReferenceTypes.StrictMode.CodeFixes\NullableReferenceTypes.StrictMode.CodeFixes.csproj", "{81C1A213-D323-4E7E-AEB6-C32B60E9D69A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NullableReferenceTypes.StrictMode.Package", "NullableReferenceTypes.StrictMode.Package\NullableReferenceTypes.StrictMode.Package.csproj", "{BBD23DF2-C688-4862-A2B6-36015C74032D}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "NullableReferenceTypes.StrictMode.Tests", "NullableReferenceTypes.StrictMode.Tests\NullableReferenceTypes.StrictMode.Tests.fsproj", "{D8C035E1-3F9A-4B3D-A935-51712EF37422}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3DE8853F-0273-4E28-A060-1FADEBB034FF}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		README.md = README.md
+		.husky\pre-commit = .husky\pre-commit
+		.husky\task-runner.json = .husky\task-runner.json
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FCE4CBC4-E7E9-4C94-9C2E-9065D1416141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCE4CBC4-E7E9-4C94-9C2E-9065D1416141}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCE4CBC4-E7E9-4C94-9C2E-9065D1416141}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCE4CBC4-E7E9-4C94-9C2E-9065D1416141}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81C1A213-D323-4E7E-AEB6-C32B60E9D69A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81C1A213-D323-4E7E-AEB6-C32B60E9D69A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81C1A213-D323-4E7E-AEB6-C32B60E9D69A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81C1A213-D323-4E7E-AEB6-C32B60E9D69A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBD23DF2-C688-4862-A2B6-36015C74032D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBD23DF2-C688-4862-A2B6-36015C74032D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBD23DF2-C688-4862-A2B6-36015C74032D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBD23DF2-C688-4862-A2B6-36015C74032D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8C035E1-3F9A-4B3D-A935-51712EF37422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8C035E1-3F9A-4B3D-A935-51712EF37422}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8C035E1-3F9A-4B3D-A935-51712EF37422}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8C035E1-3F9A-4B3D-A935-51712EF37422}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2D75EDAA-FA03-423B-B80F-54F1575548E0}
+	EndGlobalSection
+EndGlobal

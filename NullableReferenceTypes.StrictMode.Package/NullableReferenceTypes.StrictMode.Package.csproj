@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>NullableReferenceTypes.StrictMode</PackageId>
+    <PackageVersion>0.0.0-alpha</PackageVersion>
+    <Authors>Nathan Povo</Authors>
+    <PackageLicenseUrl>https://github.com/nathanpovo/NullableReferenceTypes.StrictMode/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/nathanpovo/NullableReferenceTypes.StrictMode</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nathanpovo/NullableReferenceTypes.StrictMode</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>NullableReferenceTypes.StrictMode</Description>
+    <PackageTags>NullableReferenceTypes.StrictMode, analyzers</PackageTags>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NullableReferenceTypes.StrictMode.CodeFixes\NullableReferenceTypes.StrictMode.CodeFixes.csproj" />
+    <ProjectReference Include="..\NullableReferenceTypes.StrictMode\NullableReferenceTypes.StrictMode.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <Target Name="_AddAnalyzersToOutput">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\NullableReferenceTypes.StrictMode.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)\NullableReferenceTypes.StrictMode.CodeFixes.dll" PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
+
+</Project>
