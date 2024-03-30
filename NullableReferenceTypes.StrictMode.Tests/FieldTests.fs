@@ -3,15 +3,19 @@ module ``Field Tests``
 open NullableReferenceTypes.StrictMode.Tests
 open Xunit
 
-[<Fact>]
-let ``WHEN initialising a nullable enabled field with a nullable enabled property SHOULD not show any diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN initialising a nullable enabled field with a nullable enabled property SHOULD not show any diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
-    private string testString;
+    private {{objectType}} testString;
 
     ClassUnderTest()
     {
@@ -21,19 +25,23 @@ class ClassUnderTest
 
 class NullableEnabledClass
 {
-    public string Test { get; set; } = string.Empty;
+    public {{objectType}} Test { get; set; } = string.Empty;
 }
-"
+"""
 
-[<Fact>]
-let ``WHEN initialising a nullable field with a null-oblivious property SHOULD not show any diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN initialising a nullable field with a null-oblivious property SHOULD not show any diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
-    private string? testString;
+    private {{objectType}}? testString;
 
     ClassUnderTest()
     {
@@ -45,19 +53,23 @@ class ClassUnderTest
 
 public class NullableObliviousClass
 {
-    public string Test { get; set; }
+    public {{objectType}} Test { get; set; }
 }
-"
+"""
 
-[<Fact>]
-let ``WHEN initialising a non-null field with the return from a null-oblivious property SHOULD show diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN initialising a non-null field with the return from a null-oblivious property SHOULD show diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
-    private string testString;
+    private {{objectType}} testString;
 
     ClassUnderTest()
     {
@@ -69,20 +81,24 @@ class ClassUnderTest
 
 public class NullableObliviousClass
 {
-    public string Test { get; set; }
+    public {{objectType}} Test { get; set; }
 }
-"
+"""
 
-[<Fact>]
-let ``WHEN initialising non-null fields with the return from a null-oblivious property SHOULD show diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN initialising non-null fields with the return from a null-oblivious property SHOULD show diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
-    private string testString1;
-    private string testString2;
+    private {{objectType}} testString1;
+    private {{objectType}} testString2;
 
     ClassUnderTest()
     {
@@ -94,22 +110,24 @@ class ClassUnderTest
 
 public class NullableObliviousClass
 {
-    public string Test { get; set; }
+    public {{objectType}} Test { get; set; }
 }
-"
+"""
 
-[<Fact>]
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
 let ``WHEN initialising non-null fields (separately) with the return from a null-oblivious property SHOULD show diagnostics``
-    ()
+    (objectType: string)
     =
     NullableAnalyzerTests().VerifyDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
-    private string testString1;
-    private string testString2;
+    private {{objectType}} testString1;
+    private {{objectType}} testString2;
 
     ClassUnderTest()
     {
@@ -122,6 +140,6 @@ class ClassUnderTest
 
 public class NullableObliviousClass
 {
-    public string Test { get; set; }
+    public {{objectType}} Test { get; set; }
 }
-"
+"""

@@ -3,10 +3,14 @@ module ``Parameter Tests``
 open NullableReferenceTypes.StrictMode.Tests
 open Xunit
 
-[<Fact>]
-let ``WHEN passing a null-oblivious property to a nullable parameter SHOULD not show any diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN passing a null-oblivious property to a nullable parameter SHOULD not show any diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -16,7 +20,7 @@ class ClassUnderTest
         Method(new NullableObliviousClass().Test);
     }
 
-    void Method(string? testString)
+    void Method({{objectType}}? testObject)
     {
     }
 }
@@ -25,14 +29,18 @@ class ClassUnderTest
 
 public class NullableObliviousClass
 {
-    public string Test { get; set; }
+    public {{objectType}} Test { get; set; }
 }
-"
+"""
 
-[<Fact>]
-let ``WHEN passing a null-oblivious field to a nullable parameter SHOULD not show any diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN passing a null-oblivious field to a nullable parameter SHOULD not show any diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -42,7 +50,7 @@ class ClassUnderTest
         Method(new NullableObliviousClass().Test);
     }
 
-    void Method(string? testString)
+    void Method({{objectType}}? testObject)
     {
     }
 }
@@ -51,14 +59,16 @@ class ClassUnderTest
 
 public class NullableObliviousClass
 {
-    public string Test;
+    public {{objectType}} Test;
 }
-"
+"""
 
-[<Fact>]
-let ``WHEN passing a null-oblivious property to a non-null parameter SHOULD show diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN passing a null-oblivious property to a non-null parameter SHOULD show diagnostics`` (objectType: string) =
     NullableAnalyzerTests().VerifyDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -68,7 +78,7 @@ class ClassUnderTest
         Method([|new NullableObliviousClass().Test|]);
     }
 
-    void Method(string testString)
+    void Method({{objectType}} testObject)
     {
     }
 }
@@ -77,14 +87,16 @@ class ClassUnderTest
 
 public class NullableObliviousClass
 {
-    public string Test { get; set; }
+    public {{objectType}} Test { get; set; }
 }
-"
+"""
 
-[<Fact>]
-let ``WHEN passing a null-oblivious field to a non-null parameter SHOULD show diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN passing a null-oblivious field to a non-null parameter SHOULD show diagnostics`` (objectType: string) =
     NullableAnalyzerTests().VerifyDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -94,7 +106,7 @@ class ClassUnderTest
         Method([|new NullableObliviousClass().Test|]);
     }
 
-    void Method(string testString)
+    void Method({{objectType}} testString)
     {
     }
 }
@@ -103,6 +115,6 @@ class ClassUnderTest
 
 public class NullableObliviousClass
 {
-    public string Test;
+    public {{objectType}} Test;
 }
-"
+"""

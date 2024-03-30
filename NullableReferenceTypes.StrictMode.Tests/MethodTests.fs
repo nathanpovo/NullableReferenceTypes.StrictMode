@@ -23,88 +23,104 @@ class ClassUnderTest
 }
 "
 
-[<Fact>]
-let ``WHEN assigning the nullable return of a method to a nullable variable SHOULD not show any diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN assigning the nullable return of a method to a nullable variable SHOULD not show any diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
     ClassUnderTest()
     {
-        string? maybeNullString = CreateNullString();
+        {{objectType}}? maybeNullObject = CreateNullObject();
     }
 
-    static string? CreateNullString()
+    static {{objectType}}? CreateNullObject()
     {
         return null;
     }
 }
-"
+"""
 
-[<Fact>]
-let ``WHEN assigning the null-oblivious return of a method to a nullable variable SHOULD not show any diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN assigning the null-oblivious return of a method to a nullable variable SHOULD not show any diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
     ClassUnderTest()
     {
-        string? maybeNullString = CreateNullObliviousString();
+        {{objectType}}? maybeNullObject = CreateNullObliviousObject();
     }
 
 #nullable disable
 
-    static string CreateNullObliviousString()
+    static {{objectType}} CreateNullObliviousObject()
     {
         return null;
     }
 }
-"
+"""
 
-[<Fact>]
-let ``WHEN assigning the null-oblivious return of a method to a var variable SHOULD not show any diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN assigning the null-oblivious return of a method to a var variable SHOULD not show any diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
     ClassUnderTest()
     {
-        var maybeNullString = CreateNullObliviousString();
+        var maybeNullObject = CreateNullObliviousObject();
     }
 
 #nullable disable
 
-    public static string CreateNullObliviousString()
+    public static {{objectType}} CreateNullObliviousObject()
     {
         return null;
     }
 }
-"
+"""
 
-[<Fact>]
-let ``WHEN assigning the null-oblivious return of a method to a non-null variable SHOULD show diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN assigning the null-oblivious return of a method to a non-null variable SHOULD show diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
     ClassUnderTest()
     {
-        string nonNullButNotReally = [|CreateNullObliviousString()|];
+        {{objectType}} nonNullButNotReally = [|CreateNullObliviousObject()|];
     }
 
 #nullable disable
 
-    public static string CreateNullObliviousString()
+    public static {{objectType}} CreateNullObliviousObject()
     {
         return null;
     }
 }
-"
+"""

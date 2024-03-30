@@ -30,17 +30,21 @@ namespace TestApp
 }}
 "
 
-[<Fact>]
-let ``WHEN initialising a nullable variable with a null-oblivious property SHOULD not show any diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN initialising a nullable variable with a null-oblivious property SHOULD not show any diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
     ClassUnderTest()
     {
-        string? testString = new NullableObliviousClass().Test;
+        {{objectType}}? test = new NullableObliviousClass().Test;
     }
 }
 
@@ -48,9 +52,9 @@ class ClassUnderTest
 
 public class NullableObliviousClass
 {
-    public string Test { get; set; }
+    public {{objectType}} Test { get; set; }
 }
-"
+"""
 
 [<Theory>]
 [<InlineData("string", " = string.Empty;")>]
@@ -102,10 +106,14 @@ public class NullableEnabledClass
 }}
 "
 
-[<Fact>]
-let ``WHEN initialising a variable with the return from a null-oblivious property SHOULD show diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN initialising a variable with the return from a null-oblivious property SHOULD show diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 namespace TestApp
@@ -114,7 +122,7 @@ namespace TestApp
     {
         private static void Main()
         {
-            string nonNullButNotReally = [|new NullableObliviousClass().Test|];
+            {{objectType}} nonNullButNotReally = [|new NullableObliviousClass().Test|];
         }
     }
 
@@ -122,15 +130,19 @@ namespace TestApp
 
     public class NullableObliviousClass
     {
-        public string Test { get; set; } = null;
+        public {{objectType}} Test { get; set; }
     }
 }
-"
+"""
 
-[<Fact>]
-let ``WHEN initialising variables with the return from a null-oblivious property SHOULD show diagnostics`` () =
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
+let ``WHEN initialising variables with the return from a null-oblivious property SHOULD show diagnostics``
+    (objectType: string)
+    =
     NullableAnalyzerTests().VerifyDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 namespace TestApp
@@ -139,7 +151,7 @@ namespace TestApp
     {
         private static void Main()
         {
-            string nonNullButNotReally = [|new NullableObliviousClass().Test|],
+            {{objectType}} nonNullButNotReally = [|new NullableObliviousClass().Test|],
                 nonNullButNotReally2 = [|new NullableObliviousClass().Test|];
         }
     }
@@ -148,18 +160,19 @@ namespace TestApp
 
     public class NullableObliviousClass
     {
-        public string Test { get; set; }
+        public {{objectType}} Test { get; set; }
     }
 }
-"
+"""
 
-
-[<Fact>]
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
 let ``WHEN initialising variables (separately) with the return from a null-oblivious property SHOULD show diagnostics``
-    ()
+    (objectType: string)
     =
     NullableAnalyzerTests().VerifyDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 namespace TestApp
@@ -168,8 +181,8 @@ namespace TestApp
     {
         private static void Main()
         {
-            string nonNullButNotReally = [|new NullableObliviousClass().Test|];
-            string nonNullButNotReally2 = [|new NullableObliviousClass().Test|];
+            {{objectType}} nonNullButNotReally = [|new NullableObliviousClass().Test|];
+            {{objectType}} nonNullButNotReally2 = [|new NullableObliviousClass().Test|];
         }
     }
 
@@ -177,7 +190,7 @@ namespace TestApp
 
     public class NullableObliviousClass
     {
-        public string Test { get; set; }
+        public {{objectType}} Test { get; set; }
     }
 }
-"
+"""

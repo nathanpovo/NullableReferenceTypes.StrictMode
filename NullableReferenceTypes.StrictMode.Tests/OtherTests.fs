@@ -26,96 +26,104 @@ class TestClass
 }
 "
 
-[<Fact>]
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
 let ``WHEN assigning the nullable return from a generic method to a nullable variable SHOULD not show any diagnostics``
-    ()
+    (objectType: string)
     =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
     ClassUnderTest()
     {
-        string? maybeNullString = CreateNullString<string>();
+        {{objectType}}? maybeNullObject = CreateNullObject<{{objectType}}>();
     }
 
-    static string? CreateNullString<T>() where T : class
+    static T? CreateNullObject<T>() where T : class
     {
         return null;
     }
 }
-"
+"""
 
-[<Fact>]
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
 let ``WHEN assigning the null-oblivious return from a generic method to a var variable SHOULD not show any diagnostics``
-    ()
+    (objectType: string)
     =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
     ClassUnderTest()
     {
-        var maybeNullString = CreateNullObliviousString<string?>();
+        var maybeNullObject = CreateNullObliviousObject<{{objectType}}?>();
     }
 
 #nullable disable
 
-    static T CreateNullObliviousString<T>() where T : class
+    static T CreateNullObliviousObject<T>() where T : class
     {
         return null;
     }
 }
-"
+"""
 
-[<Fact>]
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
 let ``WHEN assigning the null-oblivious return from a generic method to a nullable variable SHOULD not show any diagnostics``
-    ()
+    (objectType: string)
     =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
     ClassUnderTest()
     {
-        string? maybeNullString = CreateNullObliviousString<string?>();
+        {{objectType}}? maybeNullObject = CreateNullObliviousObject<{{objectType}}?>();
     }
 
 #nullable disable
 
-    public static T CreateNullObliviousString<T>() where T : class
+    public static T CreateNullObliviousObject<T>() where T : class
     {
         return null;
     }
 }
-"
+"""
 
-[<Fact>]
+[<Theory>]
+[<InlineData("object")>]
+[<InlineData("string")>]
 let ``WHEN assigning the null-oblivious return from a generic method to a non-nullable variable SHOULD show diagnostics``
-    ()
+    (objectType: string)
     =
     NullableAnalyzerTests().VerifyDiagnosticAsync
-        @"
+        $$"""
 #nullable enable
 
 class ClassUnderTest
 {
     ClassUnderTest()
     {
-        string nonNullButNotReally = [|CreateNullObliviousString<string>()|];
+        {{objectType}} nonNullButNotReally = [|CreateNullObliviousObject<{{objectType}}>()|];
     }
 
 #nullable disable
 
-    static T CreateNullObliviousString<T>() where T : class
+    static T CreateNullObliviousObject<T>() where T : class
     {
         return null;
     }
 }
-"
+"""
