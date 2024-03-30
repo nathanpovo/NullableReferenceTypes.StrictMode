@@ -10,25 +10,25 @@ let ``WHEN initialising a nullable enabled variable with a nullable enabled prop
     (variableType: string, typeInitialiser: string)
     =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        $@"
+        $$"""
 #nullable enable
 
 namespace TestApp
-{{
+{
     internal static class Program
-    {{
+    {
         private static void Main()
-        {{
-            {variableType} testString = new NullableEnabledClass().Test;
-        }}
-    }}
+        {
+            {{variableType}} testString = new NullableEnabledClass().Test;
+        }
+    }
 
     public class NullableEnabledClass
-    {{
-        public {variableType} Test {{ get; set; }}{typeInitialiser}
-    }}
-}}
-"
+    {
+        public {{variableType}} Test { get; set; }{{typeInitialiser}}
+    }
+}
+"""
 
 [<Theory>]
 [<InlineData("object")>]
@@ -63,25 +63,25 @@ let ``WHEN initialising a var variable with a nullable enabled property SHOULD n
     (variableType: string, typeInitialiser: string)
     =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        $@"
+        $$"""
 #nullable enable
 
 namespace TestApp
-{{
+{
     internal static class Program
-    {{
+    {
         private static void Main()
-        {{
+        {
             var testString = new NullableEnabledClass().Test;
-        }}
-    }}
+        }
+    }
 
     public class NullableEnabledClass
-    {{
-        public {variableType} Test {{ get; set; }}{typeInitialiser}
-    }}
-}}
-"
+    {
+        public {{variableType}} Test { get; set; }{{typeInitialiser}}
+    }
+}
+"""
 
 [<Theory>]
 [<InlineData("string", " = string.Empty;")>]
@@ -90,21 +90,21 @@ let ``WHEN initialising a var variable with a nullable enabled property SHOULD n
     (variableType: string, typeInitialiser: string)
     =
     NullableAnalyzerTests().VerifyNoDiagnosticAsync
-        $@"
+        $$"""
 #nullable enable
 public class ClassUnderTest
-{{
+{
     public void MethodUnderTest()
-    {{
+    {
         var testString = new NullableEnabledClass().Test;
-    }}
-}}
+    }
+}
 
 public class NullableEnabledClass
-{{
-    public {variableType} Test {{ get; set; }}{typeInitialiser}
-}}
-"
+{
+    public {{variableType}} Test { get; set; }{{typeInitialiser}}
+}
+"""
 
 [<Theory>]
 [<InlineData("object")>]
