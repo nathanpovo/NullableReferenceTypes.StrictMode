@@ -45,25 +45,41 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
             return base.VisitVariableDeclarator(node);
         }
 
-        ISymbol? initializerValueSymbol = semanticModel.GetSymbolInfo(initializer.Value).Symbol;
+        ExpressionSyntax initializerValue = initializer.Value;
+        ISymbol? initializerValueSymbol = semanticModel.GetSymbolInfo(initializerValue).Symbol;
 
         if (initializerValueSymbol is null || !IsSymbolNullOblivious(initializerValueSymbol))
         {
             return base.VisitVariableDeclarator(node);
         }
 
-        return AnnotateNode(node, initializer);
+        // Check if the variable is being declared into a "var"
+        // This check is being done to minimise the performance impact of getting the type of an initialiser
+        if (node.Parent is VariableDeclarationSyntax { Type.IsVar: true })
+        {
+            string? typeDisplayString = semanticModel
+                .GetTypeInfo(initializerValue)
+                .Type?.ToMinimalDisplayString(
+                    semanticModel,
+                    initializerValue.GetLocation().SourceSpan.Start
+                );
+
+            return AnnotateNode(node, initializer, typeDisplayString);
+        }
+
+        return AnnotateNode(node, initializer, null);
     }
 
     private static VariableDeclaratorSyntax AnnotateNode(
         VariableDeclaratorSyntax node,
-        EqualsValueClauseSyntax variableInitializer
+        EqualsValueClauseSyntax variableInitializer,
+        string? typeSymbol
     ) =>
         node.ReplaceNode(
             variableInitializer,
             variableInitializer.WithValue(
                 variableInitializer.Value.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(AnnotationKind.NullObliviousCodeAnnotationKind)
+                    new SyntaxAnnotation(AnnotationKind.NullObliviousCodeAnnotationKind, typeSymbol)
                 )
             )
         );

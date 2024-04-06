@@ -61,8 +61,31 @@ internal class SyntaxRewriter : CSharpSyntaxRewriter
         node.ReplaceNodes(
             annotatedNodes,
             (_, originalNode) =>
-                originalNode.CopyAnnotationsTo(
-                    SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)
-                )
+            {
+                string? typeInfo = originalNode
+                    .GetAnnotations(AnnotationKind.NullObliviousCodeAnnotationKind)
+                    .Where(x => string.IsNullOrEmpty(x.Data) == false)
+                    .Select(x => x.Data)
+                    .SingleOrDefault();
+
+                SyntaxNode newNode;
+                if (typeInfo is not null)
+                {
+                    NullableTypeSyntax typeSyntax = SyntaxFactory.NullableType(
+                        SyntaxFactory.ParseTypeName(typeInfo)
+                    );
+
+                    newNode = SyntaxFactory.CastExpression(
+                        typeSyntax,
+                        SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)
+                    );
+                }
+                else
+                {
+                    newNode = SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression);
+                }
+
+                return originalNode.CopyAnnotationsTo(newNode);
+            }
         );
 }
