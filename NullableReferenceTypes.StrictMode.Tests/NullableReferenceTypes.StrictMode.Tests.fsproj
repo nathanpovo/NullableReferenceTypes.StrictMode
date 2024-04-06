@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Compile Include="NullableAnalyzerTests.fs" />
+    <Compile Include="StrictNrtFlowAnalysisTests.fs" />
     <Compile Include="VariableTests.fs" />
     <Compile Include="FieldTests.fs" />
     <Compile Include="MethodTests.fs" />

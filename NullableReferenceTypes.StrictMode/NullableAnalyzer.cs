@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
@@ -86,6 +87,45 @@ public class NullableAnalyzer : DiagnosticAnalyzer
             .Select(x => Diagnostic.Create(Descriptor, Location.Create(syntaxTree, x)));
 
         context.ReportDiagnostics(diagnostics);
+
+        // Get all the nullable diagnostics that are already present in the compilation
+        // This will be used to ensure that the newly-found diagnostics are not already present in the compilation
+        // If this check is not done then the user would see duplicate diagnostics
+        List<Location> existingCs8602Diagnostics = semanticModel
+            .GetDiagnostics(cancellationToken: cancellationToken)
+            .Where(x => x.Id == "CS8602")
+            .Select(x => x.Location)
+            .ToList();
+
+        IEnumerable<Diagnostic> cs8602Diagnostics = compilationCloneDiagnostics
+            .Where(x => x.Id == "CS8602")
+            .Select(x => GetOriginalNode(syntaxNode, nullifiedSyntaxNode, x))
+            .Where(x => x is not null)
+            .Select(x => x!)
+            .Select(x => x.GetLocation())
+            .Where(x => existingCs8602Diagnostics.Contains(x) == false)
+            .Select(x => Diagnostic.Create(Descriptor, x));
+
+        context.ReportDiagnostics(cs8602Diagnostics);
+    }
+
+    /// <summary>
+    /// Tries to get the original node that is covered by the diagnostic in the modified compilation
+    /// </summary>
+    private static SyntaxNode? GetOriginalNode(
+        SyntaxNode originalSyntaxNode,
+        SyntaxNode modifiedSyntaxNode,
+        Diagnostic diagnostic
+    )
+    {
+        SyntaxNode modifiedNode = modifiedSyntaxNode.FindNode(diagnostic.Location.SourceSpan);
+
+        SyntaxKind nodeKind = modifiedNode.Kind();
+
+        return originalSyntaxNode
+            .DescendantNodes(_ => true)
+            .Where(x => x.IsKind(nodeKind))
+            .FirstOrDefault(x => x.IsEquivalentTo(modifiedNode));
     }
 
     /// <summary>
