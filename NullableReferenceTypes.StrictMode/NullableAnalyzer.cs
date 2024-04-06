@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 
 namespace NullableReferenceTypes.StrictMode;
 
@@ -41,6 +43,11 @@ public class NullableAnalyzer : DiagnosticAnalyzer
             description: Description
         );
 
+    /// <summary>
+    /// The diagnostic IDs to check for when checking the cloned compilation
+    /// </summary>
+    private static readonly string[] DiagnosticIds = { "CS8600", "CS8625" };
+
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create(Descriptor);
 
@@ -49,187 +56,61 @@ public class NullableAnalyzer : DiagnosticAnalyzer
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
 
-        // analyzer that checks if a value from a null-oblivious context is assigned to a non-nullable variable
-        context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.LocalDeclarationStatement);
-
-        // Handling expression statements (e.g. x = GetNullableValue())
-        context.RegisterSyntaxNodeAction(AnalyzeExpressionNode, SyntaxKind.ExpressionStatement);
+        context.RegisterSemanticModelAction(Action);
     }
 
-    private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+    private static void Action(SemanticModelAnalysisContext context)
     {
-        // Guard clause to ensure we're only analyzing local declarations
-        if (context.Node is not LocalDeclarationStatementSyntax localDeclaration)
-        {
-            return;
-        }
+        CancellationToken cancellationToken = context.CancellationToken;
 
-        SemanticModel model = context.SemanticModel;
+        SemanticModel semanticModel = context.SemanticModel;
+        SyntaxTree syntaxTree = semanticModel.SyntaxTree;
+        SyntaxNode syntaxNode = syntaxTree.GetRoot(cancellationToken);
 
-        VariableDeclarationSyntax variableDeclarationSyntax = localDeclaration.Declaration;
+        SyntaxNode annotatedSyntaxNode = new NullObliviousCodeAnnotator(semanticModel).Visit(
+            syntaxNode
+        );
 
-        // Ensure the variable declaration is not null otherwise we can't analyze it
-        if (variableDeclarationSyntax?.Type is not { } variableType)
-        {
-            return;
-        }
+        SyntaxNode nullifiedSyntaxNode = new SyntaxRewriter().Visit(annotatedSyntaxNode);
 
-        // There is no need to analyze var types since they are implicitly typed (and therefore nullable)
-        if (variableType.IsVar)
-        {
-            return;
-        }
+        ImmutableArray<Diagnostic> compilationCloneDiagnostics = semanticModel
+            .Compilation.Clone()
+            .ReplaceSyntaxTree(syntaxTree, nullifiedSyntaxNode.SyntaxTree)
+            .GetDiagnostics();
 
-        NullableTypeSyntax? nullableType = variableType as NullableTypeSyntax;
-        foreach (VariableDeclaratorSyntax variable in variableDeclarationSyntax.Variables)
-        {
-            // This is what is on the right side of the equals sign
-            ExpressionSyntax? initializerValue = variable?.Initializer?.Value;
+        IEnumerable<Diagnostic> diagnostics = compilationCloneDiagnostics
+            .Where(x => DiagnosticIds.Contains(x.Id))
+            .Select(x => GetOriginalNodeSpan(annotatedSyntaxNode, nullifiedSyntaxNode, x))
+            .Where(x => x is not null)
+            .Select(x => x!.Value)
+            .Select(x => Diagnostic.Create(Descriptor, Location.Create(syntaxTree, x)));
 
-            if (initializerValue is null)
-            {
-                continue;
-            }
-
-            // The initializer symbol can be different depending on the type of the initializer
-            ISymbol? initializerValueSymbol = model.GetSymbolInfo(initializerValue).Symbol;
-
-            if (
-                initializerValueSymbol is IPropertySymbol
-                {
-                    NullableAnnotation: NullableAnnotation.None
-                }
-            )
-            {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(Descriptor, initializerValue.GetLocation(), initializerValue)
-                );
-            }
-
-            if (
-                initializerValueSymbol is IFieldSymbol
-                {
-                    NullableAnnotation: NullableAnnotation.None
-                }
-            )
-            {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(Descriptor, initializerValue.GetLocation(), initializerValue)
-                );
-            }
-
-            if (
-                initializerValueSymbol
-                    is IMethodSymbol
-                    {
-                        ReturnNullableAnnotation: NullableAnnotation.None,
-                        IsGenericMethod: false
-                    }
-                && nullableType is null
-            )
-            {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(Descriptor, initializerValue.GetLocation(), initializerValue)
-                );
-            }
-
-            // Generic methods are a special case since they can be declared as "public T GetValue<T>()"
-            // This confuses the analyzer check above since it thinks that T is a properly annotated type
-            // This is a special check that checks if the definition of the method itself was annotated rather than checking the return type
-            if (
-                initializerValueSymbol
-                    is IMethodSymbol
-                    {
-                        OriginalDefinition.ReturnNullableAnnotation: NullableAnnotation.None,
-                        IsGenericMethod: true
-                    }
-                && nullableType is null
-            )
-            {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(Descriptor, initializerValue.GetLocation(), initializerValue)
-                );
-            }
-        }
+        context.ReportDiagnostics(diagnostics);
     }
 
-    private void AnalyzeExpressionNode(SyntaxNodeAnalysisContext context)
+    /// <summary>
+    /// Tries to get the original text span of node that is covered by the diagnostic in the modified compilation
+    /// </summary>
+    private static TextSpan? GetOriginalNodeSpan(
+        SyntaxNode annotatedSyntaxNode,
+        SyntaxNode modifiedSyntaxNode,
+        Diagnostic diagnostic
+    )
     {
-        if (context.Node is not ExpressionStatementSyntax localDeclaration)
+        SyntaxNode modifiedNode = modifiedSyntaxNode.FindNode(
+            diagnostic.Location.SourceSpan,
+            getInnermostNodeForTie: true
+        );
+
+        SyntaxAnnotation? annotation = modifiedNode
+            .GetAnnotations(AnnotationKind.NullObliviousCodeAnnotationKind)
+            .SingleOrDefault();
+
+        if (annotation is null)
         {
-            return;
+            return null;
         }
 
-        if (
-            localDeclaration.Expression is not AssignmentExpressionSyntax assignmentExpressionSyntax
-        )
-        {
-            return;
-        }
-
-        SemanticModel model = context.SemanticModel;
-
-        // The type being assigned to
-        // Can be a field or a property
-        _ = model.GetSymbolInfo(assignmentExpressionSyntax.Left).Symbol;
-
-        // This is what is on the right side of the equals sign
-        ExpressionSyntax initializerValue = assignmentExpressionSyntax.Right;
-
-        if (initializerValue is null)
-        {
-            return;
-        }
-
-        // The initializer symbol can be different depending on the type of the initializer
-        ISymbol? initializerValueSymbol = model.GetSymbolInfo(initializerValue).Symbol;
-
-        if (
-            initializerValueSymbol is IPropertySymbol
-            {
-                NullableAnnotation: NullableAnnotation.None
-            }
-        )
-        {
-            context.ReportDiagnostic(
-                Diagnostic.Create(Descriptor, initializerValue.GetLocation(), initializerValue)
-            );
-        }
-
-        if (initializerValueSymbol is IFieldSymbol { NullableAnnotation: NullableAnnotation.None })
-        {
-            context.ReportDiagnostic(
-                Diagnostic.Create(Descriptor, initializerValue.GetLocation(), initializerValue)
-            );
-        }
-
-        if (
-            initializerValueSymbol is IMethodSymbol
-            {
-                ReturnNullableAnnotation: NullableAnnotation.None,
-                IsGenericMethod: false
-            }
-        )
-        {
-            context.ReportDiagnostic(
-                Diagnostic.Create(Descriptor, initializerValue.GetLocation(), initializerValue)
-            );
-        }
-
-        // Generic methods are a special case since they can be declared as "public T GetValue<T>()"
-        // This confuses the analyzer check above since it thinks that T is a properly annotated type
-        // This is a special check that checks if the definition of the method itself was annotated rather than checking the return type
-        if (
-            initializerValueSymbol is IMethodSymbol
-            {
-                OriginalDefinition.ReturnNullableAnnotation: NullableAnnotation.None,
-                IsGenericMethod: true
-            }
-        )
-        {
-            context.ReportDiagnostic(
-                Diagnostic.Create(Descriptor, initializerValue.GetLocation(), initializerValue)
-            );
-        }
+        return annotatedSyntaxNode.GetAnnotatedNodes(annotation).SingleOrDefault()?.Span;
     }
 }
