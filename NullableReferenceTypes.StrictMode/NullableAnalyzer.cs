@@ -46,11 +46,6 @@ public class NullableAnalyzer : DiagnosticAnalyzer
 
     public override void Initialize(AnalysisContext context)
     {
-        if (context is null)
-        {
-            return;
-        }
-
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
 
@@ -85,11 +80,11 @@ public class NullableAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        NullableTypeSyntax nullableType = variableType as NullableTypeSyntax;
+        NullableTypeSyntax? nullableType = variableType as NullableTypeSyntax;
         foreach (VariableDeclaratorSyntax variable in variableDeclarationSyntax.Variables)
         {
             // This is what is on the right side of the equals sign
-            ExpressionSyntax initializerValue = variable?.Initializer?.Value;
+            ExpressionSyntax? initializerValue = variable?.Initializer?.Value;
 
             if (initializerValue is null)
             {
@@ -97,7 +92,7 @@ public class NullableAnalyzer : DiagnosticAnalyzer
             }
 
             // The initializer symbol can be different depending on the type of the initializer
-            ISymbol initializerValueSymbol = model.GetSymbolInfo(initializerValue).Symbol;
+            ISymbol? initializerValueSymbol = model.GetSymbolInfo(initializerValue).Symbol;
 
             if (
                 initializerValueSymbol is IPropertySymbol
@@ -187,7 +182,7 @@ public class NullableAnalyzer : DiagnosticAnalyzer
         }
 
         // The initializer symbol can be different depending on the type of the initializer
-        ISymbol initializerValueSymbol = model.GetSymbolInfo(initializerValue).Symbol;
+        ISymbol? initializerValueSymbol = model.GetSymbolInfo(initializerValue).Symbol;
 
         if (
             initializerValueSymbol is IPropertySymbol
