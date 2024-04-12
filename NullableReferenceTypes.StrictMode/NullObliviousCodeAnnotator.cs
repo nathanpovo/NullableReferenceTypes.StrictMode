@@ -55,56 +55,49 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
 
         // Check if the variable is being declared into a "var"
         // This check is being done to minimise the performance impact of getting the type of an initialiser
+        string? typeDisplayString = null;
         if (node.Parent is VariableDeclarationSyntax { Type.IsVar: true })
         {
-            string? typeDisplayString = semanticModel
+            typeDisplayString = semanticModel
                 .GetTypeInfo(initializerValue)
                 .Type?.ToMinimalDisplayString(
                     semanticModel,
                     initializerValue.GetLocation().SourceSpan.Start
                 );
-
-            return AnnotateNode(node, initializer, typeDisplayString);
         }
 
-        return AnnotateNode(node, initializer, null);
-    }
-
-    private static VariableDeclaratorSyntax AnnotateNode(
-        VariableDeclaratorSyntax node,
-        EqualsValueClauseSyntax variableInitializer,
-        string? typeSymbol
-    ) =>
-        node.ReplaceNode(
-            variableInitializer,
-            variableInitializer.WithValue(
-                variableInitializer.Value.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(AnnotationKind.NullObliviousCodeAnnotationKind, typeSymbol)
+        return node.ReplaceNode(
+            initializer,
+            initializer.WithValue(
+                initializerValue.WithAdditionalAnnotations(
+                    new SyntaxAnnotation(
+                        AnnotationKind.NullObliviousCodeAnnotationKind,
+                        typeDisplayString
+                    )
                 )
             )
         );
+    }
 
     public override SyntaxNode? VisitAssignmentExpression(AssignmentExpressionSyntax node)
     {
-        ISymbol? assignmentSymbol = semanticModel.GetSymbolInfo(node.Right).Symbol;
+        ExpressionSyntax expressionSyntax = node.Right;
+        ISymbol? assignmentSymbol = semanticModel.GetSymbolInfo(expressionSyntax).Symbol;
 
         if (assignmentSymbol is null || !IsSymbolNullOblivious(assignmentSymbol))
         {
             return base.VisitAssignmentExpression(node);
         }
 
-        return AnnotateNode(node);
-    }
-
-    private static SyntaxNode AnnotateNode(AssignmentExpressionSyntax node) =>
-        node.ReplaceNode(
+        return node.ReplaceNode(
             node,
             node.WithRight(
-                node.Right.WithAdditionalAnnotations(
+                expressionSyntax.WithAdditionalAnnotations(
                     new SyntaxAnnotation(AnnotationKind.NullObliviousCodeAnnotationKind)
                 )
             )
         );
+    }
 
     public override SyntaxNode? VisitArgument(ArgumentSyntax node)
     {
@@ -123,14 +116,10 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
                 argumentExpressionSyntax.GetLocation().SourceSpan.Start
             );
 
-        return AnnotateNode(node, typeDisplayString);
-    }
-
-    private static SyntaxNode AnnotateNode(ArgumentSyntax node, string? typeDisplayString) =>
-        node.ReplaceNode(
+        return node.ReplaceNode(
             node,
             node.WithExpression(
-                node.Expression.WithAdditionalAnnotations(
+                argumentExpressionSyntax.WithAdditionalAnnotations(
                     new SyntaxAnnotation(
                         AnnotationKind.NullObliviousCodeAnnotationKind,
                         typeDisplayString
@@ -138,4 +127,5 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
                 )
             )
         );
+    }
 }
