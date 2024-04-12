@@ -108,22 +108,33 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
 
     public override SyntaxNode? VisitArgument(ArgumentSyntax node)
     {
-        ISymbol? argumentSymbol = semanticModel.GetSymbolInfo(node.Expression).Symbol;
+        ExpressionSyntax argumentExpressionSyntax = node.Expression;
+        ISymbol? argumentSymbol = semanticModel.GetSymbolInfo(argumentExpressionSyntax).Symbol;
 
         if (!IsSymbolNullOblivious(argumentSymbol))
         {
             return base.VisitArgument(node);
         }
 
-        return AnnotateNode(node);
+        string? typeDisplayString = semanticModel
+            .GetTypeInfo(argumentExpressionSyntax)
+            .Type?.ToMinimalDisplayString(
+                semanticModel,
+                argumentExpressionSyntax.GetLocation().SourceSpan.Start
+            );
+
+        return AnnotateNode(node, typeDisplayString);
     }
 
-    private static SyntaxNode AnnotateNode(ArgumentSyntax node) =>
+    private static SyntaxNode AnnotateNode(ArgumentSyntax node, string? typeDisplayString) =>
         node.ReplaceNode(
             node,
             node.WithExpression(
                 node.Expression.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(AnnotationKind.NullObliviousCodeAnnotationKind)
+                    new SyntaxAnnotation(
+                        AnnotationKind.NullObliviousCodeAnnotationKind,
+                        typeDisplayString
+                    )
                 )
             )
         );
