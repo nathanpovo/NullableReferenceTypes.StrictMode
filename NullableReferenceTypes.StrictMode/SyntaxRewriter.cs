@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -8,57 +8,32 @@ namespace NullableReferenceTypes.StrictMode;
 
 internal class SyntaxRewriter : CSharpSyntaxRewriter
 {
-    public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node)
-    {
-        SyntaxNode[] annotatedNodes = node.GetAnnotatedNodes(
-                AnnotationKind.NullObliviousCodeAnnotationKind
-            )
-            .ToArray();
+    public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node) =>
+        ReplaceAnnotatedNodes(node, base.VisitVariableDeclarator);
 
-        if (annotatedNodes.Any() == false)
-        {
-            return base.VisitVariableDeclarator(node);
-        }
+    public override SyntaxNode? VisitAssignmentExpression(AssignmentExpressionSyntax node) =>
+        ReplaceAnnotatedNodes(node, base.VisitAssignmentExpression);
 
-        return ReplaceAnnotatedNodes(node, annotatedNodes);
-    }
+    public override SyntaxNode? VisitArgument(ArgumentSyntax node) =>
+        ReplaceAnnotatedNodes(node, base.VisitArgument);
 
-    public override SyntaxNode? VisitAssignmentExpression(AssignmentExpressionSyntax node)
-    {
-        SyntaxNode[] annotatedNodes = node.GetAnnotatedNodes(
-                AnnotationKind.NullObliviousCodeAnnotationKind
-            )
-            .ToArray();
-
-        if (annotatedNodes.Any() == false)
-        {
-            return base.VisitAssignmentExpression(node);
-        }
-
-        return ReplaceAnnotatedNodes(node, annotatedNodes);
-    }
-
-    public override SyntaxNode? VisitArgument(ArgumentSyntax node)
-    {
-        SyntaxNode[] annotatedNodes = node.GetAnnotatedNodes(
-                AnnotationKind.NullObliviousCodeAnnotationKind
-            )
-            .ToArray();
-
-        if (annotatedNodes.Any() == false)
-        {
-            return base.VisitArgument(node);
-        }
-
-        return ReplaceAnnotatedNodes(node, annotatedNodes);
-    }
-
-    private static SyntaxNode ReplaceAnnotatedNodes<TNode>(
+    private static SyntaxNode? ReplaceAnnotatedNodes<TNode>(
         TNode node,
-        IEnumerable<SyntaxNode> annotatedNodes
+        Func<TNode, SyntaxNode?> defaultNodeVisitor
     )
-        where TNode : SyntaxNode =>
-        node.ReplaceNodes(
+        where TNode : SyntaxNode
+    {
+        SyntaxNode[] annotatedNodes = node.GetAnnotatedNodes(
+                AnnotationKind.NullObliviousCodeAnnotationKind
+            )
+            .ToArray();
+
+        if (annotatedNodes.Any() == false)
+        {
+            return defaultNodeVisitor(node);
+        }
+
+        return node.ReplaceNodes(
             annotatedNodes,
             (_, originalNode) =>
             {
@@ -88,4 +63,5 @@ internal class SyntaxRewriter : CSharpSyntaxRewriter
                 return originalNode.CopyAnnotationsTo(newNode);
             }
         );
+    }
 }
