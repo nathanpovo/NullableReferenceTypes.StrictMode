@@ -9,7 +9,7 @@ open Xunit
 let ``WHEN initialising a nullable enabled field with a nullable enabled property SHOULD not show any diagnostics``
     (objectType: string)
     =
-    NullableAnalyzerTests().VerifyNoDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 
@@ -35,7 +35,7 @@ class NullableEnabledClass
 let ``WHEN initialising a nullable field with a null-oblivious property SHOULD not show any diagnostics``
     (objectType: string)
     =
-    NullableAnalyzerTests().VerifyNoDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 
@@ -63,7 +63,7 @@ public class NullableObliviousClass
 let ``WHEN initialising a non-null field with the return from a null-oblivious property SHOULD show diagnostics``
     (objectType: string)
     =
-    NullableAnalyzerTests().VerifyDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 
@@ -91,7 +91,7 @@ public class NullableObliviousClass
 let ``WHEN initialising non-null fields with the return from a null-oblivious property SHOULD show diagnostics``
     (objectType: string)
     =
-    NullableAnalyzerTests().VerifyDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 
@@ -120,7 +120,7 @@ public class NullableObliviousClass
 let ``WHEN initialising non-null fields (separately) with the return from a null-oblivious property SHOULD show diagnostics``
     (objectType: string)
     =
-    NullableAnalyzerTests().VerifyDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 

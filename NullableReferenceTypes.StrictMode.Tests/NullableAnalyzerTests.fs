@@ -1,10 +1,8 @@
 namespace NullableReferenceTypes.StrictMode.Tests
 
+open Microsoft.CodeAnalysis.Testing
 open NullableReferenceTypes.StrictMode
-open Roslynator.Testing
-open Roslynator.Testing.CSharp.Xunit
 
-type NullableAnalyzerTests() =
-    inherit XunitDiagnosticVerifier<NullableAnalyzer, EmptyCodeFixProvider>()
-
-    override this.get_Descriptor() = NullableAnalyzer.Descriptor
+// https://github.com/dotnet/roslyn-sdk/issues/1099#issuecomment-1723487931
+type NullableAnalyzerTests =
+    Microsoft.CodeAnalysis.CSharp.Testing.CSharpAnalyzerVerifier<NullableAnalyzer, DefaultVerifier>

@@ -10,7 +10,7 @@ open Xunit
 let ``WHEN initialising a new exception and using it in a throw statement SHOULD not show any diagnostics``
     (exceptionType: string)
     =
-    NullableAnalyzerTests().VerifyNoDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 
@@ -33,7 +33,7 @@ class ClassUnderTest
 let ``WHEN getting a new exception from a method and using it in a throw expression SHOULD not show any diagnostics``
     (exceptionType: string)
     =
-    NullableAnalyzerTests().VerifyNoDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 
@@ -57,7 +57,7 @@ class ClassUnderTest
 let ``WHEN getting an exception from a null-oblivious method and using it in a throw statement SHOULD show diagnostics``
     (exceptionType: string)
     =
-    NullableAnalyzerTests().VerifyDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 
@@ -85,7 +85,7 @@ static class NullObliviousClass
 let ``WHEN getting an exception from a null-oblivious generic method and using it in a throw SHOULD show diagnostics``
     (exceptionType: string)
     =
-    NullableAnalyzerTests().VerifyDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 

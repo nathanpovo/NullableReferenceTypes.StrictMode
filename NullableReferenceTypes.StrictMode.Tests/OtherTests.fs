@@ -5,7 +5,7 @@ open Xunit
 
 [<Fact>]
 let ``WHEN initialising a reference type from a generic method SHOULD not show any diagnostics`` () =
-    NullableAnalyzerTests().VerifyNoDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         @"
 #nullable enable
 
@@ -32,7 +32,7 @@ class TestClass
 let ``WHEN assigning the nullable return from a generic method to a nullable variable SHOULD not show any diagnostics``
     (objectType: string)
     =
-    NullableAnalyzerTests().VerifyNoDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 
@@ -56,7 +56,7 @@ class ClassUnderTest
 let ``WHEN assigning the null-oblivious return from a generic method to a var variable SHOULD not show any diagnostics``
     (objectType: string)
     =
-    NullableAnalyzerTests().VerifyNoDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 
@@ -82,7 +82,7 @@ class ClassUnderTest
 let ``WHEN assigning the null-oblivious return from a generic method to a nullable variable SHOULD not show any diagnostics``
     (objectType: string)
     =
-    NullableAnalyzerTests().VerifyNoDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 
@@ -108,7 +108,7 @@ class ClassUnderTest
 let ``WHEN assigning the null-oblivious return from a generic method to a non-nullable variable SHOULD show diagnostics``
     (objectType: string)
     =
-    NullableAnalyzerTests().VerifyDiagnosticAsync
+    NullableAnalyzerTests.VerifyAnalyzerAsync
         $$"""
 #nullable enable
 
