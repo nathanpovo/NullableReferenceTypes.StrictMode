@@ -47,7 +47,7 @@ public class NullableAnalyzer : DiagnosticAnalyzer
     /// <summary>
     /// The diagnostic IDs to check for when checking the cloned compilation
     /// </summary>
-    private static readonly string[] DiagnosticIds = { "CS8600", "CS8625", "CS8597" };
+    private static readonly string[] DiagnosticIds = ["CS8600", "CS8625", "CS8597"];
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create(Descriptor);
