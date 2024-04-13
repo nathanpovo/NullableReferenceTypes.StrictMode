@@ -3,6 +3,11 @@
 ###############################################################################
 * text=auto
 
+# Exclude files from GitHub language stats
+# https://github.com/github-linguist/linguist/blob/4ac734c15a96f9e16fd12330d0cb8de82274f700/docs/overrides.md
+NullableReferenceTypes.StrictMode.Package/tools/install.ps1     linguist-vendored
+NullableReferenceTypes.StrictMode.Package/tools/uninstall.ps1   linguist-vendored
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
