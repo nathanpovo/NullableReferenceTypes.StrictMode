@@ -24,7 +24,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NullableReferenceTypes.StrictMode.CodeFixes\NullableReferenceTypes.StrictMode.CodeFixes.csproj" />
     <ProjectReference Include="..\NullableReferenceTypes.StrictMode\NullableReferenceTypes.StrictMode.csproj" />
   </ItemGroup>
 
