@@ -35,7 +35,7 @@ let ``WHEN getting an exception from a null-oblivious method and using it in a t
 class ClassUnderTest
 {
     public static void ExceptionThrower()
-        => throw [|NullObliviousClass.CreateException()|];
+        => throw {|NRTSM_CS8597:NullObliviousClass.CreateException()|};
 }
 
 #nullable disable
@@ -61,7 +61,7 @@ let ``WHEN getting an exception from a null-oblivious generic method and using i
 class ClassUnderTest
 {
     public static void ExceptionThrower()
-        => throw [|NullObliviousClass.CreateException<{{exceptionType}}>()|];
+        => throw {|NRTSM_CS8597:NullObliviousClass.CreateException<{{exceptionType}}>()|};
 }
 
 #nullable disable

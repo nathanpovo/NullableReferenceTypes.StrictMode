@@ -75,7 +75,7 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        Method([|new NullableObliviousClass().Test|]);
+        Method({|NRTSM_CS8625:new NullableObliviousClass().Test|});
     }
 
     void Method({{objectType}} testObject)
@@ -103,7 +103,7 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        Method([|new NullableObliviousClass().Test|], [|new NullableObliviousClass().Test|]);
+        Method({|NRTSM_CS8625:new NullableObliviousClass().Test|}, {|NRTSM_CS8625:new NullableObliviousClass().Test|});
     }
 
     void Method({{objectType}} testObject1, {{objectType}} testObject2)
@@ -131,7 +131,7 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        Method([|new NullableObliviousClass().Test|]);
+        Method({|NRTSM_CS8625:new NullableObliviousClass().Test|});
     }
 
     void Method({{objectType}} testString)
@@ -165,7 +165,7 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        Method([|new NullableObliviousClass().Test|]);
+        Method({|NRTSM_CS8625:new NullableObliviousClass().Test|});
     }
 
     void Method({{objectType}} testString)

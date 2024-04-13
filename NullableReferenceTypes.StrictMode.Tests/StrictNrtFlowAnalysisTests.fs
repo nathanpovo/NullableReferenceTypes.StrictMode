@@ -18,7 +18,7 @@ class ClassUnderTest
     ClassUnderTest()
     {
         {{objectType}}? nullableObject = NullObliviousClass.NullObliviousProp;
-        _ = [|nullableObject|].ToString();
+        _ = {|NRTSM_CS8602:nullableObject|}.ToString();
     }
 }
 
@@ -76,7 +76,7 @@ class ClassUnderTest
     ClassUnderTest()
     {
         var nullableObject = NullObliviousClass.NullObliviousProp;
-        _ = [|nullableObject|].ToString();
+        _ = {|NRTSM_CS8602:nullableObject|}.ToString();
     }
 }
 
@@ -134,7 +134,7 @@ class ClassUnderTest
     ClassUnderTest()
     {
         var maybeNullObject = CreateNullObliviousObject();
-        _ = [|maybeNullObject|].ToString();
+        _ = {|NRTSM_CS8602:maybeNullObject|}.ToString();
     }
 
 #nullable disable
@@ -192,7 +192,7 @@ class ClassUnderTest
     ClassUnderTest()
     {
         var maybeNullObject = CreateNullObliviousObject<{{objectType}}>();
-        _ = [|maybeNullObject|].ToString();
+        _ = {|NRTSM_CS8602:maybeNullObject|}.ToString();
     }
 
 #nullable disable

@@ -12,27 +12,23 @@ namespace NullableReferenceTypes.StrictMode;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class NullableAnalyzer : DiagnosticAnalyzer
 {
-    public const string DiagnosticId = DiagnosticConstants.NullableAnalyzer;
-
-    private const string Category = "Usage";
-
-    public static readonly DiagnosticDescriptor Descriptor =
-        new(
-            DiagnosticId,
-            "Variable can be made constant",
-            "Variable '{0}' can be made constant",
-            Category,
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true
-        );
-
     /// <summary>
     /// The diagnostic IDs to check for when checking the cloned compilation
     /// </summary>
     private static readonly string[] DiagnosticIds = ["CS8600", "CS8625", "CS8597"];
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(Descriptor);
+        DiagnosticIds
+            .Concat(["CS8602"])
+            .Select(x => new DiagnosticDescriptor(
+                $"NRTSM_{x}",
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                DiagnosticSeverity.Warning,
+                true
+            ))
+            .ToImmutableArray();
 
     public override void Initialize(AnalysisContext context)
     {
@@ -164,7 +160,7 @@ public class NullableAnalyzer : DiagnosticAnalyzer
         DiagnosticDescriptor originalDescriptor = diagnostic.Descriptor;
 
         return new DiagnosticDescriptor(
-            DiagnosticId,
+            $"NRTSM_{originalDescriptor.Id}",
             originalDescriptor.Title,
             originalDescriptor.MessageFormat,
             originalDescriptor.Category,

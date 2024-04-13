@@ -73,7 +73,7 @@ class ClassUnderTest
 
     ClassUnderTest()
     {
-        testString = [|new NullableObliviousClass().Test|];
+        testString = {|NRTSM_CS8625:new NullableObliviousClass().Test|};
     }
 }
 
@@ -102,7 +102,7 @@ class ClassUnderTest
 
     ClassUnderTest()
     {
-        testString1 = testString2 = [|new NullableObliviousClass().Test|];
+        testString1 = testString2 = {|NRTSM_CS8625:new NullableObliviousClass().Test|};
     }
 }
 
@@ -131,8 +131,8 @@ class ClassUnderTest
 
     ClassUnderTest()
     {
-        testString1 = [|new NullableObliviousClass().Test|];
-        testString2 = [|new NullableObliviousClass().Test|];
+        testString1 = {|NRTSM_CS8625:new NullableObliviousClass().Test|};
+        testString2 = {|NRTSM_CS8625:new NullableObliviousClass().Test|};
     }
 }
 

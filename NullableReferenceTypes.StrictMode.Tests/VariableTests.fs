@@ -177,7 +177,7 @@ namespace TestApp
     {
         private static void Main()
         {
-            {{objectType}} nonNullButNotReally = [|new NullableObliviousClass().Test|];
+            {{objectType}} nonNullButNotReally = {|NRTSM_CS8600:new NullableObliviousClass().Test|};
         }
     }
 
@@ -207,7 +207,7 @@ namespace TestApp
         private static void Main()
         {
             {{objectType}} nonNullButNotReally;
-            nonNullButNotReally = [|new NullableObliviousClass().Test|];
+            nonNullButNotReally = {|NRTSM_CS8600:new NullableObliviousClass().Test|};
         }
     }
 
@@ -236,8 +236,8 @@ namespace TestApp
     {
         private static void Main()
         {
-            {{objectType}} nonNullButNotReally = [|new NullableObliviousClass().Test|],
-                nonNullButNotReally2 = [|new NullableObliviousClass().Test|];
+            {{objectType}} nonNullButNotReally = {|NRTSM_CS8600:new NullableObliviousClass().Test|},
+                nonNullButNotReally2 = {|NRTSM_CS8600:new NullableObliviousClass().Test|};
         }
     }
 
@@ -266,8 +266,8 @@ namespace TestApp
     {
         private static void Main()
         {
-            {{objectType}} nonNullButNotReally = [|new NullableObliviousClass().Test|];
-            {{objectType}} nonNullButNotReally2 = [|new NullableObliviousClass().Test|];
+            {{objectType}} nonNullButNotReally = {|NRTSM_CS8600:new NullableObliviousClass().Test|};
+            {{objectType}} nonNullButNotReally2 = {|NRTSM_CS8600:new NullableObliviousClass().Test|};
         }
     }
 

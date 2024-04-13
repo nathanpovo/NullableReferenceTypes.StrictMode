@@ -65,7 +65,7 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        throw [|NullObliviousClass.CreateException()|];
+        throw {|NRTSM_CS8597:NullObliviousClass.CreateException()|};
     }
 }
 
@@ -93,7 +93,7 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        throw [|NullObliviousClass.CreateException<{{exceptionType}}>()|];
+        throw {|NRTSM_CS8597:NullObliviousClass.CreateException<{{exceptionType}}>()|};
     }
 }
 

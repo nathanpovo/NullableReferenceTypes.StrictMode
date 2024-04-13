@@ -113,7 +113,7 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        {{objectType}} nonNullButNotReally = [|CreateNullObliviousObject()|];
+        {{objectType}} nonNullButNotReally = {|NRTSM_CS8600:CreateNullObliviousObject()|};
     }
 
 #nullable disable
