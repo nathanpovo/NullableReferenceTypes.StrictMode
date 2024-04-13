@@ -82,11 +82,19 @@ public class NullableAnalyzer : DiagnosticAnalyzer
         IEnumerable<Diagnostic> diagnostics = compilationCloneDiagnostics
             .Where(x => DiagnosticIds.Contains(x.Id))
             .Select(x =>
-                GetOriginalNodeLocation(syntaxTree, annotatedSyntaxNode, nullifiedSyntaxNode, x)
-            )
-            .Where(x => x is not null)
-            .Select(x => x ?? Location.None)
-            .Select(x => Diagnostic.Create(Descriptor, x));
+            {
+                Location? location = GetOriginalNodeLocation(
+                    syntaxTree,
+                    annotatedSyntaxNode,
+                    nullifiedSyntaxNode,
+                    x
+                );
+
+                return new { Diagnostic = x, Location = location };
+            })
+            .Where(x => x.Location is not null)
+            .Select(x => new { x.Diagnostic, Location = x.Location ?? Location.None })
+            .Select(x => Diagnostic.Create(CreateDescriptor(x.Diagnostic), x.Location));
 
         context.ReportDiagnostics(diagnostics);
 
@@ -101,11 +109,16 @@ public class NullableAnalyzer : DiagnosticAnalyzer
 
         IEnumerable<Diagnostic> cs8602Diagnostics = compilationCloneDiagnostics
             .Where(x => x.Id == "CS8602")
-            .Select(x => GetOriginalNodeLocation(syntaxNode, nullifiedSyntaxNode, x))
-            .Where(x => x is not null)
-            .Select(x => x ?? Location.None)
-            .Where(x => existingCs8602Diagnostics.Contains(x) == false)
-            .Select(x => Diagnostic.Create(Descriptor, x));
+            .Select(x =>
+            {
+                Location? location = GetOriginalNodeLocation(syntaxNode, nullifiedSyntaxNode, x);
+
+                return new { Diagnostic = x, Location = location };
+            })
+            .Where(x => x.Location is not null)
+            .Select(x => new { x.Diagnostic, Location = x.Location ?? Location.None })
+            .Where(x => existingCs8602Diagnostics.Contains(x.Location) == false)
+            .Select(x => Diagnostic.Create(CreateDescriptor(x.Diagnostic), x.Location));
 
         context.ReportDiagnostics(cs8602Diagnostics);
     }
@@ -162,5 +175,20 @@ public class NullableAnalyzer : DiagnosticAnalyzer
         }
 
         return Location.Create(originalSyntaxTree, span.Value);
+    }
+
+    private static DiagnosticDescriptor CreateDescriptor(Diagnostic diagnostic)
+    {
+        DiagnosticDescriptor originalDescriptor = diagnostic.Descriptor;
+
+        return new DiagnosticDescriptor(
+            DiagnosticId,
+            originalDescriptor.Title,
+            originalDescriptor.MessageFormat,
+            originalDescriptor.Category,
+            originalDescriptor.DefaultSeverity,
+            originalDescriptor.IsEnabledByDefault,
+            originalDescriptor.Description
+        );
     }
 }
