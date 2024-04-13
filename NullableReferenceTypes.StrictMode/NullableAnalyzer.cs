@@ -81,10 +81,12 @@ public class NullableAnalyzer : DiagnosticAnalyzer
 
         IEnumerable<Diagnostic> diagnostics = compilationCloneDiagnostics
             .Where(x => DiagnosticIds.Contains(x.Id))
-            .Select(x => GetOriginalNodeSpan(annotatedSyntaxNode, nullifiedSyntaxNode, x))
+            .Select(x =>
+                GetOriginalNodeLocation(syntaxTree, annotatedSyntaxNode, nullifiedSyntaxNode, x)
+            )
             .Where(x => x is not null)
-            .Select(x => x!.Value)
-            .Select(x => Diagnostic.Create(Descriptor, Location.Create(syntaxTree, x)));
+            .Select(x => x ?? Location.None)
+            .Select(x => Diagnostic.Create(Descriptor, x));
 
         context.ReportDiagnostics(diagnostics);
 
@@ -99,10 +101,9 @@ public class NullableAnalyzer : DiagnosticAnalyzer
 
         IEnumerable<Diagnostic> cs8602Diagnostics = compilationCloneDiagnostics
             .Where(x => x.Id == "CS8602")
-            .Select(x => GetOriginalNode(syntaxNode, nullifiedSyntaxNode, x))
+            .Select(x => GetOriginalNodeLocation(syntaxNode, nullifiedSyntaxNode, x))
             .Where(x => x is not null)
-            .Select(x => x!)
-            .Select(x => x.GetLocation())
+            .Select(x => x ?? Location.None)
             .Where(x => existingCs8602Diagnostics.Contains(x) == false)
             .Select(x => Diagnostic.Create(Descriptor, x));
 
@@ -110,9 +111,9 @@ public class NullableAnalyzer : DiagnosticAnalyzer
     }
 
     /// <summary>
-    /// Tries to get the original node that is covered by the diagnostic in the modified compilation
+    /// Tries to get the original node location that is covered by the diagnostic in the modified compilation
     /// </summary>
-    private static SyntaxNode? GetOriginalNode(
+    private static Location? GetOriginalNodeLocation(
         SyntaxNode originalSyntaxNode,
         SyntaxNode modifiedSyntaxNode,
         Diagnostic diagnostic
@@ -125,13 +126,15 @@ public class NullableAnalyzer : DiagnosticAnalyzer
         return originalSyntaxNode
             .DescendantNodes(_ => true)
             .Where(x => x.IsKind(nodeKind))
-            .FirstOrDefault(x => x.IsEquivalentTo(modifiedNode));
+            .FirstOrDefault(x => x.IsEquivalentTo(modifiedNode))
+            ?.GetLocation();
     }
 
     /// <summary>
-    /// Tries to get the original text span of node that is covered by the diagnostic in the modified compilation
+    /// Tries to get the original location of the node that is covered by the diagnostic in the modified compilation
     /// </summary>
-    private static TextSpan? GetOriginalNodeSpan(
+    private static Location? GetOriginalNodeLocation(
+        SyntaxTree originalSyntaxTree,
         SyntaxNode annotatedSyntaxNode,
         SyntaxNode modifiedSyntaxNode,
         Diagnostic diagnostic
@@ -151,6 +154,13 @@ public class NullableAnalyzer : DiagnosticAnalyzer
             return null;
         }
 
-        return annotatedSyntaxNode.GetAnnotatedNodes(annotation).SingleOrDefault()?.Span;
+        TextSpan? span = annotatedSyntaxNode.GetAnnotatedNodes(annotation).SingleOrDefault()?.Span;
+
+        if (span is null)
+        {
+            return null;
+        }
+
+        return Location.Create(originalSyntaxTree, span.Value);
     }
 }
