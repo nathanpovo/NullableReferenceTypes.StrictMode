@@ -17,6 +17,7 @@
     <Compile Include="ParameterTests.fs" />
     <Compile Include="OtherTests.fs" />
     <Compile Include="ThrowExpressionTests.fs" />
+    <Compile Include="ThrowStatementTests.fs" />
     <Compile Include="Program.fs"/>
   </ItemGroup>
 

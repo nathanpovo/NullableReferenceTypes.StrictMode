@@ -20,6 +20,9 @@ internal class SyntaxRewriter : CSharpSyntaxRewriter
     public override SyntaxNode? VisitThrowExpression(ThrowExpressionSyntax node) =>
         ReplaceAnnotatedNodes(node, base.VisitThrowExpression);
 
+    public override SyntaxNode? VisitThrowStatement(ThrowStatementSyntax node) =>
+        ReplaceAnnotatedNodes(node, base.VisitThrowStatement);
+
     private static SyntaxNode? ReplaceAnnotatedNodes<TNode>(
         TNode node,
         Func<TNode, SyntaxNode?> defaultNodeVisitor

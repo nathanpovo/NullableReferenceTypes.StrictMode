@@ -148,4 +148,30 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
             )
         );
     }
+
+    public override SyntaxNode? VisitThrowStatement(ThrowStatementSyntax node)
+    {
+        ExpressionSyntax? expressionSyntax = node.Expression;
+
+        if (expressionSyntax is null)
+        {
+            return base.VisitThrowStatement(node);
+        }
+
+        ISymbol? symbol = semanticModel.GetSymbolInfo(expressionSyntax).Symbol;
+
+        if (!IsSymbolNullOblivious(symbol))
+        {
+            return base.VisitThrowStatement(node);
+        }
+
+        return node.ReplaceNode(
+            node,
+            node.WithExpression(
+                expressionSyntax.WithAdditionalAnnotations(
+                    new SyntaxAnnotation(AnnotationKind.NullObliviousCodeAnnotationKind)
+                )
+            )
+        );
+    }
 }
