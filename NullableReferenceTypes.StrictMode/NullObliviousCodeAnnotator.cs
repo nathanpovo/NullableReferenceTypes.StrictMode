@@ -70,10 +70,7 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
             initializer,
             initializer.WithValue(
                 initializerValue.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(
-                        AnnotationKind.NullObliviousCodeAnnotationKind,
-                        typeDisplayString
-                    )
+                    new SyntaxAnnotation(AnnotationKind.NullObliviousCode, typeDisplayString)
                 )
             )
         );
@@ -93,7 +90,7 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
             node,
             node.WithRight(
                 expressionSyntax.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(AnnotationKind.NullObliviousCodeAnnotationKind)
+                    new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
                 )
             )
         );
@@ -120,10 +117,7 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
             node,
             node.WithExpression(
                 argumentExpressionSyntax.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(
-                        AnnotationKind.NullObliviousCodeAnnotationKind,
-                        typeDisplayString
-                    )
+                    new SyntaxAnnotation(AnnotationKind.NullObliviousCode, typeDisplayString)
                 )
             )
         );
@@ -143,7 +137,7 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
             node,
             node.WithExpression(
                 expressionSyntax.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(AnnotationKind.NullObliviousCodeAnnotationKind)
+                    new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
                 )
             )
         );
@@ -169,7 +163,7 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
             node,
             node.WithExpression(
                 expressionSyntax.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(AnnotationKind.NullObliviousCodeAnnotationKind)
+                    new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
                 )
             )
         );

@@ -159,7 +159,7 @@ public class NullableAnalyzer : DiagnosticAnalyzer
         );
 
         SyntaxAnnotation? annotation = modifiedNode
-            .GetAnnotations(AnnotationKind.NullObliviousCodeAnnotationKind)
+            .GetAnnotations(AnnotationKind.NullObliviousCode)
             .SingleOrDefault();
 
         if (annotation is null)

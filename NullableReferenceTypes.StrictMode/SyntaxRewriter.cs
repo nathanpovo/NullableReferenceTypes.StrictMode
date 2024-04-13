@@ -29,9 +29,7 @@ internal class SyntaxRewriter : CSharpSyntaxRewriter
     )
         where TNode : SyntaxNode
     {
-        SyntaxNode[] annotatedNodes = node.GetAnnotatedNodes(
-                AnnotationKind.NullObliviousCodeAnnotationKind
-            )
+        SyntaxNode[] annotatedNodes = node.GetAnnotatedNodes(AnnotationKind.NullObliviousCode)
             .ToArray();
 
         if (annotatedNodes.Any() == false)
@@ -44,7 +42,7 @@ internal class SyntaxRewriter : CSharpSyntaxRewriter
             (_, originalNode) =>
             {
                 string? typeInfo = originalNode
-                    .GetAnnotations(AnnotationKind.NullObliviousCodeAnnotationKind)
+                    .GetAnnotations(AnnotationKind.NullObliviousCode)
                     .Where(x => string.IsNullOrEmpty(x.Data) == false)
                     .Select(x => x.Data)
                     .SingleOrDefault();
