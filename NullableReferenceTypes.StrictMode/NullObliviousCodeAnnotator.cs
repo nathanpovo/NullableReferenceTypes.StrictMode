@@ -128,4 +128,24 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
             )
         );
     }
+
+    public override SyntaxNode? VisitThrowExpression(ThrowExpressionSyntax node)
+    {
+        ExpressionSyntax expressionSyntax = node.Expression;
+        ISymbol? symbol = semanticModel.GetSymbolInfo(expressionSyntax).Symbol;
+
+        if (!IsSymbolNullOblivious(symbol))
+        {
+            return base.VisitThrowExpression(node);
+        }
+
+        return node.ReplaceNode(
+            node,
+            node.WithExpression(
+                expressionSyntax.WithAdditionalAnnotations(
+                    new SyntaxAnnotation(AnnotationKind.NullObliviousCodeAnnotationKind)
+                )
+            )
+        );
+    }
 }
