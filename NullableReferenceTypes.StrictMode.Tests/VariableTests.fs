@@ -1,16 +1,17 @@
-module ``Variable Tests``
+namespace NullableReferenceTypes.StrictMode.Tests
 
-open NullableReferenceTypes.StrictMode.Tests
 open Xunit
 
-[<Theory>]
-[<InlineData("string", " = string.Empty;")>]
-[<InlineData("string?", "")>]
-let ``WHEN initialising a nullable enabled variable with a nullable enabled property SHOULD not show any diagnostics``
-    (variableType: string, typeInitialiser: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+type ``Variable Tests``() =
+
+    [<Theory>]
+    [<InlineData("string", " = string.Empty;")>]
+    [<InlineData("string?", "")>]
+    let ``WHEN initialising a nullable enabled variable with a nullable enabled property SHOULD not show any diagnostics``
+        (variableType: string, typeInitialiser: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 namespace TestApp
@@ -30,14 +31,14 @@ namespace TestApp
 }
 """
 
-[<Theory>]
-[<InlineData("string", " = string.Empty;")>]
-[<InlineData("string?", "")>]
-let ``WHEN a nullable enabled variable is assigned a nullable enabled property SHOULD not show any diagnostics``
-    (variableType: string, typeInitialiser: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("string", " = string.Empty;")>]
+    [<InlineData("string?", "")>]
+    let ``WHEN a nullable enabled variable is assigned a nullable enabled property SHOULD not show any diagnostics``
+        (variableType: string, typeInitialiser: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 namespace TestApp
@@ -58,14 +59,14 @@ namespace TestApp
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN initialising a nullable variable with a null-oblivious property SHOULD not show any diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN initialising a nullable variable with a null-oblivious property SHOULD not show any diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -84,14 +85,14 @@ public class NullableObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN a nullable variable is assigned a null-oblivious property SHOULD not show any diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN a nullable variable is assigned a null-oblivious property SHOULD not show any diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -111,14 +112,14 @@ public class NullableObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("string", " = string.Empty;")>]
-[<InlineData("string?", "")>]
-let ``WHEN initialising a var variable with a nullable enabled property SHOULD not show any diagnostics``
-    (variableType: string, typeInitialiser: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("string", " = string.Empty;")>]
+    [<InlineData("string?", "")>]
+    let ``WHEN initialising a var variable with a nullable enabled property SHOULD not show any diagnostics``
+        (variableType: string, typeInitialiser: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 namespace TestApp
@@ -138,14 +139,14 @@ namespace TestApp
 }
 """
 
-[<Theory>]
-[<InlineData("string", " = string.Empty;")>]
-[<InlineData("string?", "")>]
-let ``WHEN initialising a var variable with a nullable enabled property SHOULD not show any diagnostics2``
-    (variableType: string, typeInitialiser: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("string", " = string.Empty;")>]
+    [<InlineData("string?", "")>]
+    let ``WHEN initialising a var variable with a nullable enabled property SHOULD not show any diagnostics2``
+        (variableType: string, typeInitialiser: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 public class ClassUnderTest
 {
@@ -161,14 +162,14 @@ public class NullableEnabledClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN initialising a variable with the return from a null-oblivious property SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN initialising a variable with the return from a null-oblivious property SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 namespace TestApp
@@ -190,14 +191,14 @@ namespace TestApp
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN a variable is assigned the return from a null-oblivious property SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN a variable is assigned the return from a null-oblivious property SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 namespace TestApp
@@ -220,14 +221,14 @@ namespace TestApp
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN initialising variables with the return from a null-oblivious property SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN initialising variables with the return from a null-oblivious property SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 namespace TestApp
@@ -250,14 +251,14 @@ namespace TestApp
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN initialising variables (separately) with the return from a null-oblivious property SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN initialising variables (separately) with the return from a null-oblivious property SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 namespace TestApp

@@ -1,16 +1,17 @@
-module ``Strict NRT Flow Analysis Tests``
+namespace NullableReferenceTypes.StrictMode.Tests
 
-open NullableReferenceTypes.StrictMode.Tests
 open Xunit
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN assigning a null-oblivious property to a nullable variable, unchecked variable access SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+type ``Strict NRT Flow Analysis Tests``() =
+
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN assigning a null-oblivious property to a nullable variable, unchecked variable access SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -30,14 +31,14 @@ static class NullObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN assigning a null-oblivious property to a nullable variable, checked variable access SHOULD not show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN assigning a null-oblivious property to a nullable variable, checked variable access SHOULD not show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -61,14 +62,14 @@ static class NullObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN assigning a null-oblivious property to a var variable, unchecked variable access SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN assigning a null-oblivious property to a var variable, unchecked variable access SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -88,14 +89,14 @@ static class NullObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN assigning a null-oblivious property to a var variable, checked variable access SHOULD not show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN assigning a null-oblivious property to a var variable, checked variable access SHOULD not show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -119,14 +120,14 @@ static class NullObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN assigning the null-oblivious return of a method to a var variable, unchecked variable access SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN assigning the null-oblivious return of a method to a var variable, unchecked variable access SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -146,14 +147,14 @@ class ClassUnderTest
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN assigning the null-oblivious return of a method to a var variable, checked variable access SHOULD not show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN assigning the null-oblivious return of a method to a var variable, checked variable access SHOULD not show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -177,14 +178,14 @@ class ClassUnderTest
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN assigning the null-oblivious return from a generic method to a var variable, unchecked variable access SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN assigning the null-oblivious return from a generic method to a var variable, unchecked variable access SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -204,16 +205,16 @@ class ClassUnderTest
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-[<InlineData("object?")>]
-[<InlineData("string?")>]
-let ``WHEN assigning the null-oblivious return from a generic method to a var variable, checked variable access SHOULD not show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    [<InlineData("object?")>]
+    [<InlineData("string?")>]
+    let ``WHEN assigning the null-oblivious return from a generic method to a var variable, checked variable access SHOULD not show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest

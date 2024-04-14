@@ -1,17 +1,18 @@
-module ``Throw Expression Tests``
+namespace NullableReferenceTypes.StrictMode.Tests
 
-open NullableReferenceTypes.StrictMode.Tests
 open Xunit
 
-[<Theory>]
-[<InlineData("System.Exception")>]
-[<InlineData("System.InvalidOperationException")>]
-[<InlineData("System.ArgumentException")>]
-let ``WHEN initialising a new exception and using it in a throw expression SHOULD not show any diagnostics``
-    (exceptionType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+type ``Throw Expression Tests``() =
+
+    [<Theory>]
+    [<InlineData("System.Exception")>]
+    [<InlineData("System.InvalidOperationException")>]
+    [<InlineData("System.ArgumentException")>]
+    let ``WHEN initialising a new exception and using it in a throw expression SHOULD not show any diagnostics``
+        (exceptionType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -21,15 +22,15 @@ class ClassUnderTest
 }
 """
 
-[<Theory>]
-[<InlineData("System.Exception")>]
-[<InlineData("System.InvalidOperationException")>]
-[<InlineData("System.ArgumentException")>]
-let ``WHEN getting an exception from a null-oblivious method and using it in a throw expression SHOULD show diagnostics``
-    (exceptionType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("System.Exception")>]
+    [<InlineData("System.InvalidOperationException")>]
+    [<InlineData("System.ArgumentException")>]
+    let ``WHEN getting an exception from a null-oblivious method and using it in a throw expression SHOULD show diagnostics``
+        (exceptionType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -47,15 +48,15 @@ static class NullObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("System.Exception")>]
-[<InlineData("System.InvalidOperationException")>]
-[<InlineData("System.ArgumentException")>]
-let ``WHEN getting an exception from a null-oblivious generic method and using it in a throw expression SHOULD show diagnostics``
-    (exceptionType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("System.Exception")>]
+    [<InlineData("System.InvalidOperationException")>]
+    [<InlineData("System.ArgumentException")>]
+    let ``WHEN getting an exception from a null-oblivious generic method and using it in a throw expression SHOULD show diagnostics``
+        (exceptionType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest

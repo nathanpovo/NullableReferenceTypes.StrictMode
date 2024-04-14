@@ -1,16 +1,17 @@
-module ``Parameter Tests``
+namespace NullableReferenceTypes.StrictMode.Tests
 
-open NullableReferenceTypes.StrictMode.Tests
 open Xunit
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN passing a null-oblivious property to a nullable parameter SHOULD not show any diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+type ``Parameter Tests``() =
+
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN passing a null-oblivious property to a nullable parameter SHOULD not show any diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -33,14 +34,14 @@ public class NullableObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN passing a null-oblivious field to a nullable parameter SHOULD not show any diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN passing a null-oblivious field to a nullable parameter SHOULD not show any diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -63,12 +64,14 @@ public class NullableObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN passing a null-oblivious property to a non-null parameter SHOULD show diagnostics`` (objectType: string) =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN passing a null-oblivious property to a non-null parameter SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -91,12 +94,12 @@ public class NullableObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN passing a null-oblivious property to non-null parameters SHOULD show diagnostics`` (objectType: string) =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN passing a null-oblivious property to non-null parameters SHOULD show diagnostics`` (objectType: string) =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -119,12 +122,12 @@ public class NullableObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN passing a null-oblivious field to a non-null parameter SHOULD show diagnostics`` (objectType: string) =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN passing a null-oblivious field to a non-null parameter SHOULD show diagnostics`` (objectType: string) =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -147,18 +150,18 @@ public class NullableObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object", "float?")>]
-[<InlineData("object", "int?")>]
-[<InlineData("object", "string?")>]
-[<InlineData("string", "float?")>]
-[<InlineData("string", "int?")>]
-[<InlineData("string", "object?")>]
-let ``WHEN passing a null-oblivious field to an overloaded method with a non-null parameter SHOULD show diagnostics``
-    (objectType: string, parameterType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object", "float?")>]
+    [<InlineData("object", "int?")>]
+    [<InlineData("object", "string?")>]
+    [<InlineData("string", "float?")>]
+    [<InlineData("string", "int?")>]
+    [<InlineData("string", "object?")>]
+    let ``WHEN passing a null-oblivious field to an overloaded method with a non-null parameter SHOULD show diagnostics``
+        (objectType: string, parameterType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest

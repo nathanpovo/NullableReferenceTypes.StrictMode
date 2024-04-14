@@ -1,16 +1,17 @@
-module ``Field Tests``
+namespace NullableReferenceTypes.StrictMode.Tests
 
-open NullableReferenceTypes.StrictMode.Tests
 open Xunit
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN initialising a nullable enabled field with a nullable enabled property SHOULD not show any diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+type ``Field Tests``() =
+
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN initialising a nullable enabled field with a nullable enabled property SHOULD not show any diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -29,14 +30,14 @@ class NullableEnabledClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN initialising a nullable field with a null-oblivious property SHOULD not show any diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN initialising a nullable field with a null-oblivious property SHOULD not show any diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -57,14 +58,14 @@ public class NullableObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN initialising a non-null field with the return from a null-oblivious property SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN initialising a non-null field with the return from a null-oblivious property SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -85,14 +86,14 @@ public class NullableObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN initialising non-null fields with the return from a null-oblivious property SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN initialising non-null fields with the return from a null-oblivious property SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -114,14 +115,14 @@ public class NullableObliviousClass
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN initialising non-null fields (separately) with the return from a null-oblivious property SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN initialising non-null fields (separately) with the return from a null-oblivious property SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest

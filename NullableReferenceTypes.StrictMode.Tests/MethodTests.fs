@@ -1,12 +1,13 @@
-module ``Method Tests``
+namespace NullableReferenceTypes.StrictMode.Tests
 
-open NullableReferenceTypes.StrictMode.Tests
 open Xunit
 
-[<Fact>]
-let ``WHEN assigning the non-null return of a method to a non-null variable SHOULD not show any diagnostics`` () =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        @"
+type ``Method Tests``() =
+
+    [<Fact>]
+    let ``WHEN assigning the non-null return of a method to a non-null variable SHOULD not show any diagnostics`` () =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            @"
 #nullable enable
 
 class ClassUnderTest
@@ -23,14 +24,14 @@ class ClassUnderTest
 }
 "
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN assigning the nullable return of a method to a nullable variable SHOULD not show any diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN assigning the nullable return of a method to a nullable variable SHOULD not show any diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -47,14 +48,14 @@ class ClassUnderTest
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN assigning the null-oblivious return of a method to a nullable variable SHOULD not show any diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN assigning the null-oblivious return of a method to a nullable variable SHOULD not show any diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -73,14 +74,14 @@ class ClassUnderTest
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN assigning the null-oblivious return of a method to a var variable SHOULD not show any diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN assigning the null-oblivious return of a method to a var variable SHOULD not show any diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
@@ -99,14 +100,14 @@ class ClassUnderTest
 }
 """
 
-[<Theory>]
-[<InlineData("object")>]
-[<InlineData("string")>]
-let ``WHEN assigning the null-oblivious return of a method to a non-null variable SHOULD show diagnostics``
-    (objectType: string)
-    =
-    NullableAnalyzerTests.VerifyAnalyzerAsync
-        $$"""
+    [<Theory>]
+    [<InlineData("object")>]
+    [<InlineData("string")>]
+    let ``WHEN assigning the null-oblivious return of a method to a non-null variable SHOULD show diagnostics``
+        (objectType: string)
+        =
+        NullableAnalyzerTests.VerifyAnalyzerAsync
+            $$"""
 #nullable enable
 
 class ClassUnderTest
