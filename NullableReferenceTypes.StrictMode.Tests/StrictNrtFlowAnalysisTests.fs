@@ -10,7 +10,7 @@ type ``Strict NRT Flow Analysis Tests``() =
     let ``WHEN assigning a null-oblivious property to a nullable variable, unchecked variable access SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -19,15 +19,21 @@ class ClassUnderTest
     ClassUnderTest()
     {
         {{objectType}}? nullableObject = NullObliviousClass.NullObliviousProp;
-        _ = {|NRTSM_CS8602:nullableObject|}.ToString();
+        _ = nullableObject.ToString();
     }
 }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
 static class NullObliviousClass
 {
+#if EQUIVALENT_CODE
+    public static {{objectType}}? NullObliviousProp { get; set; } = null;
+#else
     public static {{objectType}} NullObliviousProp { get; set; } = null;
+#endif
 }
 """
 
@@ -68,7 +74,7 @@ static class NullObliviousClass
     let ``WHEN assigning a null-oblivious property to a var variable, unchecked variable access SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -77,15 +83,21 @@ class ClassUnderTest
     ClassUnderTest()
     {
         var nullableObject = NullObliviousClass.NullObliviousProp;
-        _ = {|NRTSM_CS8602:nullableObject|}.ToString();
+        _ = nullableObject.ToString();
     }
 }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
 static class NullObliviousClass
 {
+#if EQUIVALENT_CODE
+    public static {{objectType}}? NullObliviousProp { get; set; } = null;
+#else
     public static {{objectType}} NullObliviousProp { get; set; } = null;
+#endif
 }
 """
 
@@ -126,7 +138,7 @@ static class NullObliviousClass
     let ``WHEN assigning the null-oblivious return of a method to a var variable, unchecked variable access SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -135,12 +147,18 @@ class ClassUnderTest
     ClassUnderTest()
     {
         var maybeNullObject = CreateNullObliviousObject();
-        _ = {|NRTSM_CS8602:maybeNullObject|}.ToString();
+        _ = maybeNullObject.ToString();
     }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
+#if EQUIVALENT_CODE
+    public static {{objectType}}? CreateNullObliviousObject()
+#else
     public static {{objectType}} CreateNullObliviousObject()
+#endif
     {
         return null;
     }
@@ -184,7 +202,7 @@ class ClassUnderTest
     let ``WHEN assigning the null-oblivious return from a generic method to a var variable, unchecked variable access SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -193,12 +211,18 @@ class ClassUnderTest
     ClassUnderTest()
     {
         var maybeNullObject = CreateNullObliviousObject<{{objectType}}>();
-        _ = {|NRTSM_CS8602:maybeNullObject|}.ToString();
+        _ = maybeNullObject.ToString();
     }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
+#if EQUIVALENT_CODE
+    static T? CreateNullObliviousObject<T>() where T : class
+#else
     static T CreateNullObliviousObject<T>() where T : class
+#endif
     {
         return null;
     }

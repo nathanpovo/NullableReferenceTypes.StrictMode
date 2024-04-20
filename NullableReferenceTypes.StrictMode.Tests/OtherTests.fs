@@ -109,7 +109,7 @@ class ClassUnderTest
     let ``WHEN assigning the null-oblivious return from a generic method to a non-nullable variable SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -117,12 +117,18 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        {{objectType}} nonNullButNotReally = {|NRTSM_CS8600:CreateNullObliviousObject<{{objectType}}>()|};
+        {{objectType}} nonNullButNotReally = CreateNullObliviousObject<{{objectType}}>();
     }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
+#if EQUIVALENT_CODE
+    static T? CreateNullObliviousObject<T>() where T : class
+#else
     static T CreateNullObliviousObject<T>() where T : class
+#endif
     {
         return null;
     }

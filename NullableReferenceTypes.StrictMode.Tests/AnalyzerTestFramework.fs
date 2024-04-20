@@ -2,11 +2,14 @@ module AnalyzerTestFramework
 
 open System
 open System.Collections.Immutable
+open System.Text
 open System.Threading
+open Microsoft.CodeAnalysis
 open Microsoft.CodeAnalysis.CSharp.Testing
 open Microsoft.CodeAnalysis.Diagnostics
 open Microsoft.CodeAnalysis.Testing
 open Microsoft.CodeAnalysis.Testing.Model
+open Microsoft.CodeAnalysis.Text
 
 [<AutoOpen>]
 module private PrivateHelpers =
@@ -77,6 +80,121 @@ module private PrivateHelpers =
 
             task { return! verifyTask }
 
+    type DiagnosticGetter() as this =
+        inherit CSharpAnalyzerTest<EmptyDiagnosticAnalyzer, DefaultVerifier>()
+
+        do
+            // Specify that call compiler diagnostics should be reported
+            this.CompilerDiagnostics <- CompilerDiagnostics.All
+
+            // Disables the CS1591 diagnostics (Missing XML comment for publicly visible type or member 'XYZ') because it is
+            // not needed.
+            this.DisabledDiagnostics.Add "CS1591"
+
+        static let additionalProjects = ImmutableArray<EvaluatedProjectState>.Empty
+        static let analyzers = ImmutableArray<DiagnosticAnalyzer>.Empty
+        static let additionalDiagnostics = ImmutableArray<struct (Project * Diagnostic)>.Empty
+
+        member _.verifier = DiagnosticGetter.Verify
+
+        // :(
+        // https://github.com/dotnet/fsharp/issues/12448
+        member private _.GetSortedDiagnostics
+            (solution, analyzers, additionalDiagnostics, compilerDiagnostics, verifier, cancellationToken)
+            =
+            base.GetSortedDiagnosticsAsync(
+                solution,
+                analyzers,
+                additionalDiagnostics,
+                compilerDiagnostics,
+                verifier,
+                cancellationToken
+            )
+
+        member this.GetDiagnostics(source, cancellationToken: CancellationToken) =
+            this.TestCode <- source
+
+            let primaryProject = EvaluatedProjectState(this.TestState, this.ReferenceAssemblies)
+
+            let createProjectTask =
+                base.CreateProjectAsync(primaryProject, additionalProjects, cancellationToken)
+
+            task {
+                let! project = createProjectTask
+
+                let! sortedDiagnostics =
+                    this.GetSortedDiagnostics(
+                        project.Solution,
+                        analyzers,
+                        additionalDiagnostics,
+                        this.CompilerDiagnostics,
+                        this.verifier,
+                        cancellationToken
+                    )
+
+                return
+                    sortedDiagnostics
+                    |> Seq.map (fun struct (_, diagnostic) -> diagnostic)
+                    |> Seq.toArray
+            }
+
+    let mapDiagnostic lineDifference (diagnostic: Diagnostic) =
+        let lineSpan = diagnostic.Location.GetLineSpan()
+
+        let newLinePosition (linePosition: LinePosition, lineDifference) =
+            LinePosition(linePosition.Line + lineDifference, linePosition.Character)
+
+        let newLineSpan =
+            FileLinePositionSpan(
+                lineSpan.Path,
+                newLinePosition (lineSpan.StartLinePosition, lineDifference),
+                newLinePosition (lineSpan.EndLinePosition, lineDifference)
+            )
+
+        DiagnosticResult("NRTSM_" + diagnostic.Id, diagnostic.Severity)
+        |> _.WithMessage(diagnostic.GetMessage())
+        |> _.WithIsSuppressed(diagnostic.IsSuppressed)
+        |> _.WithSpan(newLineSpan)
+
+    let getDiagnostics source =
+        DiagnosticGetter().GetDiagnostics(source, CancellationToken.None)
+
+    let getExpectedDiagnostics (source: string) =
+        let amountOfNewLines = 2
+
+        // Create code equivalent to the code under test that would produce the expected diagnostics
+        let equivalentCode =
+            let builder = StringBuilder()
+
+            builder.Append "#define EQUIVALENT_CODE" |> ignore
+
+            Environment.NewLine
+            |> Seq.replicate amountOfNewLines
+            |> Seq.iter (fun x -> builder.Append x |> ignore)
+
+            builder.Append source |> ignore
+
+            builder.ToString()
+
+        task {
+            let! diagnostics = getDiagnostics equivalentCode
+
+            let diagnosticResults =
+                diagnostics |> Seq.map (mapDiagnostic -amountOfNewLines) |> Seq.toArray
+
+            // Will only occur if the equivalent code was built incorrectly.
+            // The equivalent code should always have diagnostics otherwise there would be no reason to test it.
+            if diagnosticResults.Length = 0 then
+                failwith (
+                    "No diagnostics found in:"
+                    + Environment.NewLine
+                    + Environment.NewLine
+                    + equivalentCode
+                )
+
+            return diagnosticResults
+        }
+
 let VerifyNoDiagnosticAsync<'TAnalyzer, 'TVerifier
     when 'TAnalyzer: (new: unit -> 'TAnalyzer)
     and 'TAnalyzer :> DiagnosticAnalyzer
@@ -97,3 +215,50 @@ let VerifyDiagnosticAsync<'TAnalyzer, 'TVerifier
     =
     CSharpAnalyzerVerifier<'TAnalyzer, 'TVerifier>
         .VerifyAnalyzerAsync(source, expected)
+
+/// <summary>
+/// An analyzer tester that verifies that all diagnostics related to nullable reference type are reported at the
+/// interaction points between nullable-enabled and nullable-disabled code sections.
+/// </summary>
+/// <remarks>
+/// <para>
+/// The function operates by dividing the source code into two separate compilations:
+/// </para>
+/// <list type="table">
+/// <item>
+/// <term>Code under test:</term>
+/// <description>
+/// This is the actual source code being written and tested.
+/// </description>
+/// </item>
+/// <item>
+/// <term>Equivalent code:</term>
+/// <description>
+/// A simulated version of the code that triggers all expected diagnostics for nullable reference types.
+/// </description>
+/// </item>
+/// </list>
+/// <para>
+/// The analyzer tester uses the <c>EQUIVALENT_CODE</c> preprocessor directive to conditionally compile the source code,
+/// distinguishing between the code under test and the equivalent code.
+/// </para>
+/// <para>
+/// The tester uses the diagnostics reported on the equivalent code to know what diagnostics should be reported on the
+/// actual code under test. This makes the analyzer tester more accurate as-opposed to manually defining the expected
+/// diagnostics in each test.
+/// </para>
+/// </remarks>
+let VerifyStrictFlowAnalysisDiagnosticsAsync<'TAnalyzer, 'TVerifier
+    when 'TAnalyzer: (new: unit -> 'TAnalyzer)
+    and 'TAnalyzer :> DiagnosticAnalyzer
+    and 'TVerifier: (new: unit -> 'TVerifier)
+    and 'TVerifier :> IVerifier>
+    (source: string)
+    =
+    let codeUnderTest = source.ReplaceLineEndings()
+
+    task {
+        let! diagnosticResults = getExpectedDiagnostics source
+
+        return! VerifyDiagnosticAsync<'TAnalyzer, 'TVerifier> codeUnderTest diagnosticResults
+    }

@@ -168,7 +168,7 @@ public class NullableEnabledClass
     let ``WHEN initialising a variable with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -178,15 +178,21 @@ namespace TestApp
     {
         private static void Main()
         {
-            {{objectType}} nonNullButNotReally = {|NRTSM_CS8600:new NullableObliviousClass().Test|};
+            {{objectType}} nonNullButNotReally = new NullableObliviousClass().Test;
         }
     }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
     public class NullableObliviousClass
     {
+#if EQUIVALENT_CODE
+        public {{objectType}}? Test { get; set; }
+#else
         public {{objectType}} Test { get; set; }
+#endif
     }
 }
 """
@@ -197,7 +203,7 @@ namespace TestApp
     let ``WHEN a variable is assigned the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -208,15 +214,21 @@ namespace TestApp
         private static void Main()
         {
             {{objectType}} nonNullButNotReally;
-            nonNullButNotReally = {|NRTSM_CS8600:new NullableObliviousClass().Test|};
+            nonNullButNotReally = new NullableObliviousClass().Test;
         }
     }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
     public class NullableObliviousClass
     {
+#if EQUIVALENT_CODE
+        public {{objectType}}? Test { get; set; }
+#else
         public {{objectType}} Test { get; set; }
+#endif
     }
 }
 """
@@ -227,7 +239,7 @@ namespace TestApp
     let ``WHEN initialising variables with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -237,16 +249,22 @@ namespace TestApp
     {
         private static void Main()
         {
-            {{objectType}} nonNullButNotReally = {|NRTSM_CS8600:new NullableObliviousClass().Test|},
-                nonNullButNotReally2 = {|NRTSM_CS8600:new NullableObliviousClass().Test|};
+            {{objectType}} nonNullButNotReally = new NullableObliviousClass().Test,
+                nonNullButNotReally2 = new NullableObliviousClass().Test;
         }
     }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
     public class NullableObliviousClass
     {
+#if EQUIVALENT_CODE
+        public {{objectType}}? Test { get; set; }
+#else
         public {{objectType}} Test { get; set; }
+#endif
     }
 }
 """
@@ -257,7 +275,7 @@ namespace TestApp
     let ``WHEN initialising variables (separately) with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -267,16 +285,22 @@ namespace TestApp
     {
         private static void Main()
         {
-            {{objectType}} nonNullButNotReally = {|NRTSM_CS8600:new NullableObliviousClass().Test|};
-            {{objectType}} nonNullButNotReally2 = {|NRTSM_CS8600:new NullableObliviousClass().Test|};
+            {{objectType}} nonNullButNotReally = new NullableObliviousClass().Test;
+            {{objectType}} nonNullButNotReally2 = new NullableObliviousClass().Test;
         }
     }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
     public class NullableObliviousClass
     {
+#if EQUIVALENT_CODE
+        public {{objectType}}? Test { get; set; }
+#else
         public {{objectType}} Test { get; set; }
+#endif
     }
 }
 """

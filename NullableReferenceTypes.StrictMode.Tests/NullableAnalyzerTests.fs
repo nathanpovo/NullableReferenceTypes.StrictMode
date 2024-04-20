@@ -11,3 +11,6 @@ module NullableAnalyzerTests =
 
     let VerifyDiagnosticAsync source ([<ParamArray>] diagnostics) =
         AnalyzerTestFramework.VerifyDiagnosticAsync<NullableAnalyzer, DefaultVerifier> source diagnostics
+
+    let VerifyStrictFlowAnalysisDiagnosticsAsync =
+        AnalyzerTestFramework.VerifyStrictFlowAnalysisDiagnosticsAsync<NullableAnalyzer, DefaultVerifier>

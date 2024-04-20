@@ -58,7 +58,7 @@ class ClassUnderTest
     let ``WHEN getting an exception from a null-oblivious method and using it in a throw statement SHOULD show diagnostics``
         (exceptionType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -66,15 +66,22 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        throw {|NRTSM_CS8597:NullObliviousClass.CreateException()|};
+        throw NullObliviousClass.CreateException();
     }
 }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
 static class NullObliviousClass
 {
+
+#if EQUIVALENT_CODE
+    public static {{exceptionType}}? CreateException()
+#else
     public static {{exceptionType}} CreateException()
+#endif
         => null;
 }
 """
@@ -86,7 +93,7 @@ static class NullObliviousClass
     let ``WHEN getting an exception from a null-oblivious generic method and using it in a throw SHOULD show diagnostics``
         (exceptionType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -94,15 +101,21 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        throw {|NRTSM_CS8597:NullObliviousClass.CreateException<{{exceptionType}}>()|};
+        throw NullObliviousClass.CreateException<{{exceptionType}}>();
     }
 }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
 static class NullObliviousClass
 {
+#if EQUIVALENT_CODE
+    public static TException? CreateException<TException>()
+#else
     public static TException CreateException<TException>()
+#endif
         where TException : System.Exception, new()
         => null;
 }

@@ -64,7 +64,7 @@ public class NullableObliviousClass
     let ``WHEN initialising a non-null field with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -74,15 +74,21 @@ class ClassUnderTest
 
     ClassUnderTest()
     {
-        testString = {|NRTSM_CS8625:new NullableObliviousClass().Test|};
+        testString = new NullableObliviousClass().Test;
     }
 }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
 public class NullableObliviousClass
 {
+#if EQUIVALENT_CODE
+    public {{objectType}}? Test { get; set; }
+#else
     public {{objectType}} Test { get; set; }
+#endif
 }
 """
 
@@ -92,7 +98,7 @@ public class NullableObliviousClass
     let ``WHEN initialising non-null fields with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -103,15 +109,21 @@ class ClassUnderTest
 
     ClassUnderTest()
     {
-        testString1 = testString2 = {|NRTSM_CS8625:new NullableObliviousClass().Test|};
+        testString1 = testString2 = new NullableObliviousClass().Test;
     }
 }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
 public class NullableObliviousClass
 {
+#if EQUIVALENT_CODE
+    public {{objectType}}? Test { get; set; }
+#else
     public {{objectType}} Test { get; set; }
+#endif
 }
 """
 
@@ -121,7 +133,7 @@ public class NullableObliviousClass
     let ``WHEN initialising non-null fields (separately) with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -132,15 +144,21 @@ class ClassUnderTest
 
     ClassUnderTest()
     {
-        testString1 = {|NRTSM_CS8625:new NullableObliviousClass().Test|};
-        testString2 = {|NRTSM_CS8625:new NullableObliviousClass().Test|};
+        testString1 = new NullableObliviousClass().Test;
+        testString2 = new NullableObliviousClass().Test;
     }
 }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
 public class NullableObliviousClass
 {
+#if EQUIVALENT_CODE
+    public {{objectType}}? Test { get; set; }
+#else
     public {{objectType}} Test { get; set; }
+#endif
 }
 """

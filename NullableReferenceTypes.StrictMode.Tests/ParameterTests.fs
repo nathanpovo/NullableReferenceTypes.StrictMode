@@ -70,7 +70,7 @@ public class NullableObliviousClass
     let ``WHEN passing a null-oblivious property to a non-null parameter SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -78,7 +78,7 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        Method({|NRTSM_CS8625:new NullableObliviousClass().Test|});
+        Method(new NullableObliviousClass().Test);
     }
 
     void Method({{objectType}} testObject)
@@ -86,11 +86,17 @@ class ClassUnderTest
     }
 }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
 public class NullableObliviousClass
 {
+#if EQUIVALENT_CODE
+    public {{objectType}}? Test { get; set; }
+#else
     public {{objectType}} Test { get; set; }
+#endif
 }
 """
 
@@ -98,7 +104,7 @@ public class NullableObliviousClass
     [<InlineData("object")>]
     [<InlineData("string")>]
     let ``WHEN passing a null-oblivious property to non-null parameters SHOULD show diagnostics`` (objectType: string) =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -106,7 +112,7 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        Method({|NRTSM_CS8625:new NullableObliviousClass().Test|}, {|NRTSM_CS8625:new NullableObliviousClass().Test|});
+        Method(new NullableObliviousClass().Test, new NullableObliviousClass().Test);
     }
 
     void Method({{objectType}} testObject1, {{objectType}} testObject2)
@@ -114,11 +120,17 @@ class ClassUnderTest
     }
 }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
 public class NullableObliviousClass
 {
+#if EQUIVALENT_CODE
+    public {{objectType}}? Test { get; set; }
+#else
     public {{objectType}} Test { get; set; }
+#endif
 }
 """
 
@@ -126,7 +138,7 @@ public class NullableObliviousClass
     [<InlineData("object")>]
     [<InlineData("string")>]
     let ``WHEN passing a null-oblivious field to a non-null parameter SHOULD show diagnostics`` (objectType: string) =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -134,7 +146,7 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        Method({|NRTSM_CS8625:new NullableObliviousClass().Test|});
+        Method(new NullableObliviousClass().Test);
     }
 
     void Method({{objectType}} testString)
@@ -142,11 +154,17 @@ class ClassUnderTest
     }
 }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
 public class NullableObliviousClass
 {
+#if EQUIVALENT_CODE
+    public {{objectType}}? Test;
+#else
     public {{objectType}} Test;
+#endif
 }
 """
 
@@ -160,7 +178,7 @@ public class NullableObliviousClass
     let ``WHEN passing a null-oblivious field to an overloaded method with a non-null parameter SHOULD show diagnostics``
         (objectType: string, parameterType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -168,7 +186,7 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        Method({|NRTSM_CS8625:new NullableObliviousClass().Test|});
+        Method(new NullableObliviousClass().Test);
     }
 
     void Method({{objectType}} testString)
@@ -180,10 +198,16 @@ class ClassUnderTest
     }
 }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
 public class NullableObliviousClass
 {
+#if EQUIVALENT_CODE
+    public {{objectType}}? Test;
+#else
     public {{objectType}} Test;
+#endif
 }
 """

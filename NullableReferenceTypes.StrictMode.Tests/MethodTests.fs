@@ -106,7 +106,7 @@ class ClassUnderTest
     let ``WHEN assigning the null-oblivious return of a method to a non-null variable SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyDiagnosticAsync
+        NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
             $$"""
 #nullable enable
 
@@ -114,12 +114,18 @@ class ClassUnderTest
 {
     ClassUnderTest()
     {
-        {{objectType}} nonNullButNotReally = {|NRTSM_CS8600:CreateNullObliviousObject()|};
+        {{objectType}} nonNullButNotReally = CreateNullObliviousObject();
     }
 
+#if !EQUIVALENT_CODE
 #nullable disable
+#endif
 
+#if EQUIVALENT_CODE
+    public static {{objectType}}? CreateNullObliviousObject()
+#else
     public static {{objectType}} CreateNullObliviousObject()
+#endif
     {
         return null;
     }
