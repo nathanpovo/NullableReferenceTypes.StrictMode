@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="AnalyzerTestFramework.fs" />
     <Compile Include="NullableAnalyzerTests.fs" />
     <Compile Include="StrictNrtFlowAnalysisTests.fs" />
     <Compile Include="VariableTests.fs" />
