@@ -6,7 +6,7 @@ type ``Method Tests``() =
 
     [<Fact>]
     let ``WHEN assigning the non-null return of a method to a non-null variable SHOULD not show any diagnostics`` () =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             @"
 #nullable enable
 
@@ -30,7 +30,7 @@ class ClassUnderTest
     let ``WHEN assigning the nullable return of a method to a nullable variable SHOULD not show any diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -54,7 +54,7 @@ class ClassUnderTest
     let ``WHEN assigning the null-oblivious return of a method to a nullable variable SHOULD not show any diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -80,7 +80,7 @@ class ClassUnderTest
     let ``WHEN assigning the null-oblivious return of a method to a var variable SHOULD not show any diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 

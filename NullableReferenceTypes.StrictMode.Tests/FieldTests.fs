@@ -10,7 +10,7 @@ type ``Field Tests``() =
     let ``WHEN initialising a nullable enabled field with a nullable enabled property SHOULD not show any diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -36,7 +36,7 @@ class NullableEnabledClass
     let ``WHEN initialising a nullable field with a null-oblivious property SHOULD not show any diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 

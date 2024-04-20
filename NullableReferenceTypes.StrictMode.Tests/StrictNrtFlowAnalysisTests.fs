@@ -37,7 +37,7 @@ static class NullObliviousClass
     let ``WHEN assigning a null-oblivious property to a nullable variable, checked variable access SHOULD not show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -95,7 +95,7 @@ static class NullObliviousClass
     let ``WHEN assigning a null-oblivious property to a var variable, checked variable access SHOULD not show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -153,7 +153,7 @@ class ClassUnderTest
     let ``WHEN assigning the null-oblivious return of a method to a var variable, checked variable access SHOULD not show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -213,7 +213,7 @@ class ClassUnderTest
     let ``WHEN assigning the null-oblivious return from a generic method to a var variable, checked variable access SHOULD not show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 

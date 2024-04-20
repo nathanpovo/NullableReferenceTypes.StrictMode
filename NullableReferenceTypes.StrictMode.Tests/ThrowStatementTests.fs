@@ -11,7 +11,7 @@ type ``Throw Statement Tests``() =
     let ``WHEN initialising a new exception and using it in a throw statement SHOULD not show any diagnostics``
         (exceptionType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -34,7 +34,7 @@ class ClassUnderTest
     let ``WHEN getting a new exception from a method and using it in a throw expression SHOULD not show any diagnostics``
         (exceptionType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 

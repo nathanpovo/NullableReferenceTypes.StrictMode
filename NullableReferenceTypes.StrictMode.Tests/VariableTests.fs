@@ -10,7 +10,7 @@ type ``Variable Tests``() =
     let ``WHEN initialising a nullable enabled variable with a nullable enabled property SHOULD not show any diagnostics``
         (variableType: string, typeInitialiser: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -37,7 +37,7 @@ namespace TestApp
     let ``WHEN a nullable enabled variable is assigned a nullable enabled property SHOULD not show any diagnostics``
         (variableType: string, typeInitialiser: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -65,7 +65,7 @@ namespace TestApp
     let ``WHEN initialising a nullable variable with a null-oblivious property SHOULD not show any diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -91,7 +91,7 @@ public class NullableObliviousClass
     let ``WHEN a nullable variable is assigned a null-oblivious property SHOULD not show any diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -118,7 +118,7 @@ public class NullableObliviousClass
     let ``WHEN initialising a var variable with a nullable enabled property SHOULD not show any diagnostics``
         (variableType: string, typeInitialiser: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -145,7 +145,7 @@ namespace TestApp
     let ``WHEN initialising a var variable with a nullable enabled property SHOULD not show any diagnostics2``
         (variableType: string, typeInitialiser: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 public class ClassUnderTest

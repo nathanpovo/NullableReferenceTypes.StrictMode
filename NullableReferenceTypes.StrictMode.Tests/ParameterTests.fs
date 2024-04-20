@@ -10,7 +10,7 @@ type ``Parameter Tests``() =
     let ``WHEN passing a null-oblivious property to a nullable parameter SHOULD not show any diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -40,7 +40,7 @@ public class NullableObliviousClass
     let ``WHEN passing a null-oblivious field to a nullable parameter SHOULD not show any diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 

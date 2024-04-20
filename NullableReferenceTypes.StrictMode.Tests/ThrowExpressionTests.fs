@@ -11,7 +11,7 @@ type ``Throw Expression Tests``() =
     let ``WHEN initialising a new exception and using it in a throw expression SHOULD not show any diagnostics``
         (exceptionType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyNoDiagnosticAsync
             $$"""
 #nullable enable
 
