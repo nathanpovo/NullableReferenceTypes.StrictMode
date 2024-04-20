@@ -168,7 +168,7 @@ public class NullableEnabledClass
     let ``WHEN initialising a variable with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -197,7 +197,7 @@ namespace TestApp
     let ``WHEN a variable is assigned the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -227,7 +227,7 @@ namespace TestApp
     let ``WHEN initialising variables with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -257,7 +257,7 @@ namespace TestApp
     let ``WHEN initialising variables (separately) with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 

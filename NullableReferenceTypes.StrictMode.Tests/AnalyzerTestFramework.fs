@@ -1,5 +1,6 @@
 module AnalyzerTestFramework
 
+open System
 open System.Collections.Immutable
 open System.Threading
 open Microsoft.CodeAnalysis.CSharp.Testing
@@ -85,3 +86,14 @@ let VerifyNoDiagnosticAsync<'TAnalyzer, 'TVerifier
     =
     AnalyzerVerifier<'TAnalyzer, NoDiagnosticsAnalyzerTest<'TAnalyzer, 'TVerifier>, 'TVerifier>
         .VerifyAnalyzerAsync(source)
+
+let VerifyDiagnosticAsync<'TAnalyzer, 'TVerifier
+    when 'TAnalyzer: (new: unit -> 'TAnalyzer)
+    and 'TAnalyzer :> DiagnosticAnalyzer
+    and 'TVerifier: (new: unit -> 'TVerifier)
+    and 'TVerifier :> IVerifier>
+    (source: string)
+    (expected: DiagnosticResult[])
+    =
+    CSharpAnalyzerVerifier<'TAnalyzer, 'TVerifier>
+        .VerifyAnalyzerAsync(source, expected)

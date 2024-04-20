@@ -29,7 +29,7 @@ class ClassUnderTest
     let ``WHEN getting an exception from a null-oblivious method and using it in a throw expression SHOULD show diagnostics``
         (exceptionType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -55,7 +55,7 @@ static class NullObliviousClass
     let ``WHEN getting an exception from a null-oblivious generic method and using it in a throw expression SHOULD show diagnostics``
         (exceptionType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 

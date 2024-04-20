@@ -106,7 +106,7 @@ class ClassUnderTest
     let ``WHEN assigning the null-oblivious return of a method to a non-null variable SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 

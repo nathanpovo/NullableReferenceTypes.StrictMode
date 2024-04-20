@@ -64,7 +64,7 @@ public class NullableObliviousClass
     let ``WHEN initialising a non-null field with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -92,7 +92,7 @@ public class NullableObliviousClass
     let ``WHEN initialising non-null fields with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -121,7 +121,7 @@ public class NullableObliviousClass
     let ``WHEN initialising non-null fields (separately) with the return from a null-oblivious property SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 

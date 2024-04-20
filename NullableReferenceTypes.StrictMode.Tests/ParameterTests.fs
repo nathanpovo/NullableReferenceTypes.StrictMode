@@ -70,7 +70,7 @@ public class NullableObliviousClass
     let ``WHEN passing a null-oblivious property to a non-null parameter SHOULD show diagnostics``
         (objectType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -98,7 +98,7 @@ public class NullableObliviousClass
     [<InlineData("object")>]
     [<InlineData("string")>]
     let ``WHEN passing a null-oblivious property to non-null parameters SHOULD show diagnostics`` (objectType: string) =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -126,7 +126,7 @@ public class NullableObliviousClass
     [<InlineData("object")>]
     [<InlineData("string")>]
     let ``WHEN passing a null-oblivious field to a non-null parameter SHOULD show diagnostics`` (objectType: string) =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 
@@ -160,7 +160,7 @@ public class NullableObliviousClass
     let ``WHEN passing a null-oblivious field to an overloaded method with a non-null parameter SHOULD show diagnostics``
         (objectType: string, parameterType: string)
         =
-        NullableAnalyzerTests.VerifyAnalyzerAsync
+        NullableAnalyzerTests.VerifyDiagnosticAsync
             $$"""
 #nullable enable
 
