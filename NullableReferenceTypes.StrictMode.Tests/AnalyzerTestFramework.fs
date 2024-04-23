@@ -138,6 +138,63 @@ module private PrivateHelpers =
                     |> Seq.toArray
             }
 
+    let createAnalyserException innerException (codeUnderTest: string) (expectedDiagnostics: DiagnosticResult[]) =
+        let applyMarkersForDiagnostic (state: char array) startCharacter endCharacter =
+            for i = startCharacter to (endCharacter - 1) do
+                state[i] <- '^'
+
+            state
+
+        // Note that there could be multiple diagnostics on the same line
+        // This function handles that scenario
+        let createLineMarker (locations: FileLinePositionSpan seq) line =
+            let characterPositions =
+                locations
+                |> Seq.map (fun x ->
+                    {| Start = x.StartLinePosition.Character
+                       End = x.EndLinePosition.Character |})
+                |> Seq.cache
+
+            let maxEndCharacter = characterPositions |> Seq.map (_.End) |> Seq.max
+
+            let initialState = ' ' |> Array.create maxEndCharacter
+
+            let marker =
+                characterPositions
+                |> Seq.fold
+                    (fun state location -> applyMarkersForDiagnostic state location.Start location.End)
+                    initialState
+                |> String
+
+            {| line = line; marker = marker |}
+
+        // The diagnostic marker has to be inserted in the line after (meaning below) the actual diagnostic
+        let insertDiagnostic (code: string array) line marker =
+            code |> Array.insertAt (line + 1) marker
+
+        let splitCode = codeUnderTest.Split Environment.NewLine
+
+        let codeMarkedWithDiagnostics =
+            expectedDiagnostics
+            |> Seq.filter (_.HasLocation)
+            |> Seq.map (_.Spans[0].Span)
+            |> Seq.groupBy (_.StartLinePosition.Line)
+            |> Seq.map (fun (key, values) -> createLineMarker values key)
+            |> Seq.sortByDescending (_.line)
+            |> Seq.fold (fun state y -> insertDiagnostic state y.line y.marker) splitCode
+            |> (fun x -> String.Join(Environment.NewLine, x))
+
+        let message =
+            "Expected diagnostics:"
+            + Environment.NewLine
+            + Environment.NewLine
+            + String.Join(Environment.NewLine, expectedDiagnostics)
+            + Environment.NewLine
+            + Environment.NewLine
+            + codeMarkedWithDiagnostics
+
+        exn (message, innerException)
+
     let mapDiagnostic lineDifference (diagnostic: Diagnostic) =
         let lineSpan = diagnostic.Location.GetLineSpan()
 
@@ -260,5 +317,8 @@ let VerifyStrictFlowAnalysisDiagnosticsAsync<'TAnalyzer, 'TVerifier
     task {
         let! diagnosticResults = getExpectedDiagnostics source
 
-        return! VerifyDiagnosticAsync<'TAnalyzer, 'TVerifier> codeUnderTest diagnosticResults
+        try
+            return! VerifyDiagnosticAsync<'TAnalyzer, 'TVerifier> codeUnderTest diagnosticResults
+        with e ->
+            createAnalyserException e codeUnderTest diagnosticResults |> raise
     }
