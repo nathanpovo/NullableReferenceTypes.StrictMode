@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
@@ -15,11 +14,10 @@ public class NullableAnalyzer : DiagnosticAnalyzer
     /// <summary>
     /// The diagnostic IDs to check for when checking the cloned compilation
     /// </summary>
-    private static readonly string[] DiagnosticIds = ["CS8600", "CS8625", "CS8597"];
+    private static readonly string[] DiagnosticIds = ["CS8600", "CS8602", "CS8625", "CS8597"];
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         DiagnosticIds
-            .Concat(["CS8602"])
             .Select(x => new DiagnosticDescriptor(
                 $"NRTSM_{x}",
                 string.Empty,
@@ -52,6 +50,8 @@ public class NullableAnalyzer : DiagnosticAnalyzer
 
         SyntaxNode nullifiedSyntaxNode = new SyntaxRewriter().Visit(annotatedSyntaxNode);
 
+        IList<TextChange> changes = syntaxTree.GetChanges(nullifiedSyntaxNode.SyntaxTree);
+
         ImmutableArray<Diagnostic> compilationCloneDiagnostics = semanticModel
             .Compilation.Clone()
             .ReplaceSyntaxTree(syntaxTree, nullifiedSyntaxNode.SyntaxTree)
@@ -61,98 +61,45 @@ public class NullableAnalyzer : DiagnosticAnalyzer
             .Where(x => DiagnosticIds.Contains(x.Id))
             .Select(x =>
             {
-                Location? location = GetOriginalNodeLocation(
-                    syntaxTree,
-                    annotatedSyntaxNode,
-                    nullifiedSyntaxNode,
-                    x
-                );
+                Location location = MapDiagnosticLocation(syntaxTree, changes, x.Location);
 
-                return new { Diagnostic = x, Location = location };
+                return new { Diagnostic = x, Location = location, };
             })
-            .Where(x => x.Location is not null)
-            .Select(x => new { x.Diagnostic, Location = x.Location ?? Location.None })
             .Select(x => Diagnostic.Create(CreateDescriptor(x.Diagnostic), x.Location));
 
         context.ReportDiagnostics(diagnostics);
-
-        // Get all the nullable diagnostics that are already present in the compilation
-        // This will be used to ensure that the newly-found diagnostics are not already present in the compilation
-        // If this check is not done then the user would see duplicate diagnostics
-        List<Location> existingCs8602Diagnostics = semanticModel
-            .GetDiagnostics(cancellationToken: cancellationToken)
-            .Where(x => x.Id == "CS8602")
-            .Select(x => x.Location)
-            .ToList();
-
-        IEnumerable<Diagnostic> cs8602Diagnostics = compilationCloneDiagnostics
-            .Where(x => x.Id == "CS8602")
-            .Select(x =>
-            {
-                Location? location = GetOriginalNodeLocation(syntaxNode, nullifiedSyntaxNode, x);
-
-                return new { Diagnostic = x, Location = location };
-            })
-            .Where(x => x.Location is not null)
-            .Select(x => new { x.Diagnostic, Location = x.Location ?? Location.None })
-            .Where(x => existingCs8602Diagnostics.Contains(x.Location) == false)
-            .Select(x => Diagnostic.Create(CreateDescriptor(x.Diagnostic), x.Location));
-
-        context.ReportDiagnostics(cs8602Diagnostics);
     }
 
-    /// <summary>
-    /// Tries to get the original node location that is covered by the diagnostic in the modified compilation
-    /// </summary>
-    private static Location? GetOriginalNodeLocation(
-        SyntaxNode originalSyntaxNode,
-        SyntaxNode modifiedSyntaxNode,
-        Diagnostic diagnostic
+    private static Location MapDiagnosticLocation(
+        SyntaxTree originalSyntaxNode,
+        IList<TextChange> textChanges,
+        Location location
     )
     {
-        SyntaxNode modifiedNode = modifiedSyntaxNode.FindNode(diagnostic.Location.SourceSpan);
+        int start = MapPointToOriginalSyntaxTree(textChanges, location.SourceSpan.Start);
+        int end = MapPointToOriginalSyntaxTree(textChanges, location.SourceSpan.End);
 
-        SyntaxKind nodeKind = modifiedNode.Kind();
+        TextSpan textSpan = TextSpan.FromBounds(start, end);
 
-        return originalSyntaxNode
-            .DescendantNodes(_ => true)
-            .Where(x => x.IsKind(nodeKind))
-            .FirstOrDefault(x => x.IsEquivalentTo(modifiedNode))
-            ?.GetLocation();
+        return Location.Create(originalSyntaxNode, textSpan);
     }
 
-    /// <summary>
-    /// Tries to get the original location of the node that is covered by the diagnostic in the modified compilation
-    /// </summary>
-    private static Location? GetOriginalNodeLocation(
-        SyntaxTree originalSyntaxTree,
-        SyntaxNode annotatedSyntaxNode,
-        SyntaxNode modifiedSyntaxNode,
-        Diagnostic diagnostic
+    private static int MapPointToOriginalSyntaxTree(
+        IEnumerable<TextChange> textChanges,
+        int location
     )
     {
-        SyntaxNode modifiedNode = modifiedSyntaxNode.FindNode(
-            diagnostic.Location.SourceSpan,
-            getInnermostNodeForTie: true
+        // Maps a point to the original syntax tree by reversing all the changes that had been done to the syntax tree.
+        // Only the changes that were applied before (in terms of span position) the location to be mapped need to be
+        // applied since anything else does not affect the point.
+        IEnumerable<int> changesToApply = textChanges
+            .Where(x => x.Span.End <= location)
+            .Select(x => x.Span.Length - (x.NewText?.Length ?? 0));
+
+        return changesToApply.Aggregate(
+            location,
+            (currentLocation, differenceToApply) => currentLocation - differenceToApply
         );
-
-        SyntaxAnnotation? annotation = modifiedNode
-            .GetAnnotations(AnnotationKind.NullObliviousCode)
-            .SingleOrDefault();
-
-        if (annotation is null)
-        {
-            return null;
-        }
-
-        TextSpan? span = annotatedSyntaxNode.GetAnnotatedNodes(annotation).SingleOrDefault()?.Span;
-
-        if (span is null)
-        {
-            return null;
-        }
-
-        return Location.Create(originalSyntaxTree, span.Value);
     }
 
     private static DiagnosticDescriptor CreateDescriptor(Diagnostic diagnostic)
