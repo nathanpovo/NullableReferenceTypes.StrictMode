@@ -44,11 +44,9 @@ public class NullableAnalyzer : DiagnosticAnalyzer
         SyntaxTree syntaxTree = semanticModel.SyntaxTree;
         SyntaxNode syntaxNode = syntaxTree.GetRoot(cancellationToken);
 
-        SyntaxNode annotatedSyntaxNode = new NullObliviousCodeAnnotator(semanticModel).Visit(
+        SyntaxNode nullifiedSyntaxNode = new NullObliviousCodeRewriter(semanticModel).Visit(
             syntaxNode
         );
-
-        SyntaxNode nullifiedSyntaxNode = new SyntaxRewriter().Visit(annotatedSyntaxNode);
 
         IList<TextChange> changes = syntaxTree.GetChanges(nullifiedSyntaxNode.SyntaxTree);
 

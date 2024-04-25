@@ -4,11 +4,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace NullableReferenceTypes.StrictMode;
 
-internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
+internal class NullObliviousCodeRewriter : CSharpSyntaxRewriter
 {
     private readonly SemanticModel semanticModel;
 
-    internal NullObliviousCodeAnnotator(SemanticModel semanticModel)
+    internal NullObliviousCodeRewriter(SemanticModel semanticModel)
     {
         this.semanticModel = semanticModel;
     }
@@ -67,13 +67,14 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
         }
 
         return node.ReplaceNode(
-            initializer,
-            initializer.WithValue(
-                initializerValue.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(AnnotationKind.NullObliviousCode, typeDisplayString)
+                initializer,
+                initializer.WithValue(
+                    initializerValue.WithAdditionalAnnotations(
+                        new SyntaxAnnotation(AnnotationKind.NullObliviousCode, typeDisplayString)
+                    )
                 )
             )
-        );
+            .ReplaceAnnotatedNodes();
     }
 
     public override SyntaxNode? VisitAssignmentExpression(AssignmentExpressionSyntax node)
@@ -87,13 +88,14 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
         }
 
         return node.ReplaceNode(
-            node,
-            node.WithRight(
-                expressionSyntax.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
+                node,
+                node.WithRight(
+                    expressionSyntax.WithAdditionalAnnotations(
+                        new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
+                    )
                 )
             )
-        );
+            .ReplaceAnnotatedNodes();
     }
 
     public override SyntaxNode? VisitArgument(ArgumentSyntax node)
@@ -114,13 +116,14 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
             );
 
         return node.ReplaceNode(
-            node,
-            node.WithExpression(
-                argumentExpressionSyntax.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(AnnotationKind.NullObliviousCode, typeDisplayString)
+                node,
+                node.WithExpression(
+                    argumentExpressionSyntax.WithAdditionalAnnotations(
+                        new SyntaxAnnotation(AnnotationKind.NullObliviousCode, typeDisplayString)
+                    )
                 )
             )
-        );
+            .ReplaceAnnotatedNodes();
     }
 
     public override SyntaxNode? VisitThrowExpression(ThrowExpressionSyntax node)
@@ -134,13 +137,14 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
         }
 
         return node.ReplaceNode(
-            node,
-            node.WithExpression(
-                expressionSyntax.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
+                node,
+                node.WithExpression(
+                    expressionSyntax.WithAdditionalAnnotations(
+                        new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
+                    )
                 )
             )
-        );
+            .ReplaceAnnotatedNodes();
     }
 
     public override SyntaxNode? VisitThrowStatement(ThrowStatementSyntax node)
@@ -160,12 +164,13 @@ internal class NullObliviousCodeAnnotator : CSharpSyntaxRewriter
         }
 
         return node.ReplaceNode(
-            node,
-            node.WithExpression(
-                expressionSyntax.WithAdditionalAnnotations(
-                    new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
+                node,
+                node.WithExpression(
+                    expressionSyntax.WithAdditionalAnnotations(
+                        new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
+                    )
                 )
             )
-        );
+            .ReplaceAnnotatedNodes();
     }
 }

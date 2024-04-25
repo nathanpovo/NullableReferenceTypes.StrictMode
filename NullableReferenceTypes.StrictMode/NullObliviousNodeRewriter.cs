@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -6,30 +5,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace NullableReferenceTypes.StrictMode;
 
-internal class SyntaxRewriter : CSharpSyntaxRewriter
-{
-    public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node) =>
-        node.ReplaceAnnotatedNodes(base.VisitVariableDeclarator);
-
-    public override SyntaxNode? VisitAssignmentExpression(AssignmentExpressionSyntax node) =>
-        node.ReplaceAnnotatedNodes(base.VisitAssignmentExpression);
-
-    public override SyntaxNode? VisitArgument(ArgumentSyntax node) =>
-        node.ReplaceAnnotatedNodes(base.VisitArgument);
-
-    public override SyntaxNode? VisitThrowExpression(ThrowExpressionSyntax node) =>
-        node.ReplaceAnnotatedNodes(base.VisitThrowExpression);
-
-    public override SyntaxNode? VisitThrowStatement(ThrowStatementSyntax node) =>
-        node.ReplaceAnnotatedNodes(base.VisitThrowStatement);
-}
-
 internal static class NullObliviousNodeRewriter
 {
-    public static SyntaxNode? ReplaceAnnotatedNodes<TNode>(
-        this TNode node,
-        Func<TNode, SyntaxNode?> defaultNodeVisitor
-    )
+    public static SyntaxNode ReplaceAnnotatedNodes<TNode>(this TNode node)
         where TNode : SyntaxNode
     {
         SyntaxNode[] annotatedNodes = node.GetAnnotatedNodes(AnnotationKind.NullObliviousCode)
@@ -37,7 +15,7 @@ internal static class NullObliviousNodeRewriter
 
         if (annotatedNodes.Any() == false)
         {
-            return defaultNodeVisitor(node);
+            return node;
         }
 
         return node.ReplaceNodes(
