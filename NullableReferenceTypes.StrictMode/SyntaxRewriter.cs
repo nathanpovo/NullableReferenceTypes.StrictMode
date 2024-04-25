@@ -9,22 +9,25 @@ namespace NullableReferenceTypes.StrictMode;
 internal class SyntaxRewriter : CSharpSyntaxRewriter
 {
     public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node) =>
-        ReplaceAnnotatedNodes(node, base.VisitVariableDeclarator);
+        node.ReplaceAnnotatedNodes(base.VisitVariableDeclarator);
 
     public override SyntaxNode? VisitAssignmentExpression(AssignmentExpressionSyntax node) =>
-        ReplaceAnnotatedNodes(node, base.VisitAssignmentExpression);
+        node.ReplaceAnnotatedNodes(base.VisitAssignmentExpression);
 
     public override SyntaxNode? VisitArgument(ArgumentSyntax node) =>
-        ReplaceAnnotatedNodes(node, base.VisitArgument);
+        node.ReplaceAnnotatedNodes(base.VisitArgument);
 
     public override SyntaxNode? VisitThrowExpression(ThrowExpressionSyntax node) =>
-        ReplaceAnnotatedNodes(node, base.VisitThrowExpression);
+        node.ReplaceAnnotatedNodes(base.VisitThrowExpression);
 
     public override SyntaxNode? VisitThrowStatement(ThrowStatementSyntax node) =>
-        ReplaceAnnotatedNodes(node, base.VisitThrowStatement);
+        node.ReplaceAnnotatedNodes(base.VisitThrowStatement);
+}
 
-    private static SyntaxNode? ReplaceAnnotatedNodes<TNode>(
-        TNode node,
+internal static class NullObliviousNodeRewriter
+{
+    public static SyntaxNode? ReplaceAnnotatedNodes<TNode>(
+        this TNode node,
         Func<TNode, SyntaxNode?> defaultNodeVisitor
     )
         where TNode : SyntaxNode
