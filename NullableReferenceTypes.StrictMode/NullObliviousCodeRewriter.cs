@@ -66,15 +66,7 @@ internal class NullObliviousCodeRewriter : CSharpSyntaxRewriter
                 );
         }
 
-        return node.ReplaceNode(
-                initializer,
-                initializer.WithValue(
-                    initializerValue.WithAdditionalAnnotations(
-                        new SyntaxAnnotation(AnnotationKind.NullObliviousCode, typeDisplayString)
-                    )
-                )
-            )
-            .ReplaceAnnotatedNodes();
+        return node.ReplaceNodeWithNullifiedNode(initializerValue, typeDisplayString);
     }
 
     public override SyntaxNode? VisitAssignmentExpression(AssignmentExpressionSyntax node)
@@ -87,15 +79,7 @@ internal class NullObliviousCodeRewriter : CSharpSyntaxRewriter
             return base.VisitAssignmentExpression(node);
         }
 
-        return node.ReplaceNode(
-                node,
-                node.WithRight(
-                    expressionSyntax.WithAdditionalAnnotations(
-                        new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
-                    )
-                )
-            )
-            .ReplaceAnnotatedNodes();
+        return node.ReplaceNodeWithNullifiedNode(expressionSyntax);
     }
 
     public override SyntaxNode? VisitArgument(ArgumentSyntax node)
@@ -115,15 +99,7 @@ internal class NullObliviousCodeRewriter : CSharpSyntaxRewriter
                 argumentExpressionSyntax.GetLocation().SourceSpan.Start
             );
 
-        return node.ReplaceNode(
-                node,
-                node.WithExpression(
-                    argumentExpressionSyntax.WithAdditionalAnnotations(
-                        new SyntaxAnnotation(AnnotationKind.NullObliviousCode, typeDisplayString)
-                    )
-                )
-            )
-            .ReplaceAnnotatedNodes();
+        return node.ReplaceNodeWithNullifiedNode(argumentExpressionSyntax, typeDisplayString);
     }
 
     public override SyntaxNode? VisitThrowExpression(ThrowExpressionSyntax node)
@@ -136,15 +112,7 @@ internal class NullObliviousCodeRewriter : CSharpSyntaxRewriter
             return base.VisitThrowExpression(node);
         }
 
-        return node.ReplaceNode(
-                node,
-                node.WithExpression(
-                    expressionSyntax.WithAdditionalAnnotations(
-                        new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
-                    )
-                )
-            )
-            .ReplaceAnnotatedNodes();
+        return node.ReplaceNodeWithNullifiedNode(expressionSyntax);
     }
 
     public override SyntaxNode? VisitThrowStatement(ThrowStatementSyntax node)
@@ -163,14 +131,6 @@ internal class NullObliviousCodeRewriter : CSharpSyntaxRewriter
             return base.VisitThrowStatement(node);
         }
 
-        return node.ReplaceNode(
-                node,
-                node.WithExpression(
-                    expressionSyntax.WithAdditionalAnnotations(
-                        new SyntaxAnnotation(AnnotationKind.NullObliviousCode)
-                    )
-                )
-            )
-            .ReplaceAnnotatedNodes();
+        return node.ReplaceNodeWithNullifiedNode(expressionSyntax);
     }
 }
