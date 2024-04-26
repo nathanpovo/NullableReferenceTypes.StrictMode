@@ -8,7 +8,7 @@ internal static class NullObliviousNodeRewriter
 {
     public static TRoot ReplaceNodeWithNullifiedNode<TRoot>(
         this TRoot root,
-        SyntaxNode oldNode,
+        ExpressionSyntax oldNode,
         string? typeInfo = null
     )
         where TRoot : SyntaxNode
@@ -21,10 +21,7 @@ internal static class NullObliviousNodeRewriter
                 SyntaxFactory.ParseTypeName(typeInfo)
             );
 
-            newNode = SyntaxFactory.CastExpression(
-                typeSyntax,
-                SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)
-            );
+            newNode = SyntaxFactory.CastExpression(typeSyntax, oldNode);
         }
         else
         {
