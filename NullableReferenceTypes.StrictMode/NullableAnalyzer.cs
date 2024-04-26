@@ -20,6 +20,7 @@ public class NullableAnalyzer : DiagnosticAnalyzer
     private static readonly string[] DiagnosticIds =
     [
         "CS8600",
+        "CS8601",
         "CS8602",
         "CS8604",
         "CS8618",
