@@ -79,7 +79,14 @@ internal class NullObliviousCodeRewriter : CSharpSyntaxRewriter
             return base.VisitAssignmentExpression(node);
         }
 
-        return node.ReplaceNodeWithNullifiedNode(expressionSyntax);
+        string? typeDisplayString = semanticModel
+            .GetTypeInfo(expressionSyntax)
+            .Type?.ToMinimalDisplayString(
+                semanticModel,
+                expressionSyntax.GetLocation().SourceSpan.Start
+            );
+
+        return node.ReplaceNodeWithNullifiedNode(expressionSyntax, typeDisplayString);
     }
 
     public override SyntaxNode? VisitArgument(ArgumentSyntax node)
