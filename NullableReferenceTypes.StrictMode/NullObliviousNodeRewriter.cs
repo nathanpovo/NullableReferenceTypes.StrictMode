@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace NullableReferenceTypes.StrictMode;
 
@@ -17,15 +18,13 @@ internal static class NullObliviousNodeRewriter
 
         if (typeInfo is not null)
         {
-            NullableTypeSyntax typeSyntax = SyntaxFactory.NullableType(
-                SyntaxFactory.ParseTypeName(typeInfo)
-            );
+            NullableTypeSyntax typeSyntax = NullableType(ParseTypeName(typeInfo));
 
-            newNode = SyntaxFactory.CastExpression(typeSyntax, oldNode);
+            newNode = CastExpression(typeSyntax, oldNode);
         }
         else
         {
-            newNode = SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression);
+            newNode = LiteralExpression(SyntaxKind.NullLiteralExpression);
         }
 
         return root.ReplaceNode(oldNode, newNode);
