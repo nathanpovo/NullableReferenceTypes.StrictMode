@@ -239,18 +239,19 @@ module private PrivateHelpers =
             let diagnosticResults =
                 diagnostics |> Seq.map (mapDiagnostic -amountOfNewLines) |> Seq.toArray
 
-            // Will only occur if the equivalent code was built incorrectly.
-            // The equivalent code should always have diagnostics otherwise there would be no reason to test it.
-            if diagnosticResults.Length = 0 then
-                failwith (
-                    "No diagnostics found in:"
-                    + Environment.NewLine
-                    + Environment.NewLine
-                    + equivalentCode
-                )
-
-            return diagnosticResults
+            return (equivalentCode, diagnosticResults)
         }
+
+    let ensureTestIsCorrect equivalentCode (diagnosticResults: DiagnosticResult array) =
+        // Will only occur if the equivalent code was built incorrectly.
+        // The equivalent code should always have diagnostics otherwise there would be no reason to test it.
+        if diagnosticResults.Length = 0 then
+            failwith (
+                "No diagnostics found in:"
+                + Environment.NewLine
+                + Environment.NewLine
+                + equivalentCode
+            )
 
 let VerifyNoDiagnosticAsync<'TAnalyzer, 'TVerifier
     when 'TAnalyzer: (new: unit -> 'TAnalyzer)
@@ -315,7 +316,9 @@ let VerifyStrictFlowAnalysisDiagnosticsAsync<'TAnalyzer, 'TVerifier
     let codeUnderTest = source.ReplaceLineEndings()
 
     task {
-        let! diagnosticResults = getExpectedDiagnostics source
+        let! equivalentCode, diagnosticResults = getExpectedDiagnostics source
+
+        ensureTestIsCorrect equivalentCode diagnosticResults
 
         try
             return! VerifyDiagnosticAsync<'TAnalyzer, 'TVerifier> codeUnderTest diagnosticResults
