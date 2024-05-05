@@ -333,12 +333,11 @@ module private PrivateHelpers =
             (fun (final: DiagnosticResult) location -> final.WithSpan(location.Span, location.Options))
             withoutSpans
 
-    let mapDiagnostic lineDifference (diagnostic: Diagnostic) =
+    let toDiagnosticResult (diagnostic: Diagnostic) =
         DiagnosticResult(diagnostic.Id, diagnostic.Severity)
         |> _.WithMessage(diagnostic.GetMessage())
         |> _.WithIsSuppressed(diagnostic.IsSuppressed)
         |> _.WithSpan(diagnostic.Location.GetLineSpan())
-        |> _.WithLineOffset(lineDifference)
 
     let mapDiagnosticId diagnosticId =
         if nullableDiagnosticsAsString |> Array.contains diagnosticId then
@@ -369,10 +368,9 @@ module private PrivateHelpers =
         task {
             let! diagnostics = getDiagnostics equivalentCode
 
-            let diagnosticResults =
-                diagnostics |> Seq.map (mapDiagnostic -amountOfNewLines) |> Seq.toArray
+            let diagnosticResults = diagnostics |> Seq.map toDiagnosticResult |> Seq.toArray
 
-            return (equivalentCode, diagnosticResults)
+            return (equivalentCode, diagnosticResults, -amountOfNewLines)
         }
 
     let ensureTestIsCorrect equivalentCode (diagnosticResults: DiagnosticResult array) =
@@ -449,13 +447,16 @@ let VerifyStrictFlowAnalysisDiagnosticsAsync<'TAnalyzer, 'TVerifier
     let codeUnderTest = source.ReplaceLineEndings()
 
     task {
-        let! equivalentCode, diagnosticResults = getExpectedDiagnostics source
+        let! equivalentCode, diagnosticResults, lineOffset = getExpectedDiagnostics source
 
         ensureTestIsCorrect equivalentCode diagnosticResults
 
         let mappedDiagnosticResults =
             diagnosticResults
-            |> Array.map (fun diagnosticResult -> (diagnosticResult |> withId (mapDiagnosticId diagnosticResult.Id)))
+            |> Array.map (fun diagnosticResult ->
+                diagnosticResult
+                |> _.WithLineOffset(lineOffset)
+                |> withId (mapDiagnosticId diagnosticResult.Id))
 
         try
             return! VerifyDiagnosticAsync<'TAnalyzer, 'TVerifier> codeUnderTest mappedDiagnosticResults
