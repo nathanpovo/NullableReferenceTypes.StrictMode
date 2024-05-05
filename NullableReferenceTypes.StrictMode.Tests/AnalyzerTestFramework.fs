@@ -377,6 +377,7 @@ module private PrivateHelpers =
         equivalentCode
         (diagnosticResults: DiagnosticResult array)
         (allowedDiagnostics: DiagnosticId seq)
+        (requiredDiagnostics: DiagnosticId seq)
         =
         // Will only occur if the equivalent code was built incorrectly.
         // The equivalent code should always have diagnostics otherwise there would be no reason to test it.
@@ -415,6 +416,37 @@ module private PrivateHelpers =
                 "The following unexpected diagnostics were reported:"
                 + Environment.NewLine
                 + String.Join(Environment.NewLine, notAllowed)
+                + Environment.NewLine
+                + Environment.NewLine
+                + createEquivalentCodeMessage.Value
+            )
+
+        // Will only occur if the test was written incorrectly.
+        // The test should always specify what diagnostics are required to ensure that the test is testing the expected
+        // scenarios.
+        if requiredDiagnostics |> Seq.isEmpty then
+            failwith (
+                "List of required diagnostics cannot be empty. This is to ensure that the test knows what diagnostics it is testing for."
+                + Environment.NewLine
+                + Environment.NewLine
+                + createEquivalentCodeMessage.Value
+            )
+
+        let missingDiagnostics =
+            requiredDiagnostics
+            |> Seq.map _.ToString()
+            |> Seq.except distinctDiagnosticIds
+            |> Seq.toArray
+
+        // Occurs when the code under test does not contain the required diagnostics.
+        if missingDiagnostics.Length > 0 then
+            let message =
+                match missingDiagnostics.Length with
+                | 1 -> $"diagnostic {missingDiagnostics[0]} was"
+                | _ -> "diagnostics " + String.Join(", ", missingDiagnostics) + " were"
+
+            failwith (
+                $"The {message} not found in the code under test."
                 + Environment.NewLine
                 + Environment.NewLine
                 + createEquivalentCodeMessage.Value
@@ -478,6 +510,7 @@ let VerifyStrictFlowAnalysisDiagnosticsAsync<'TAnalyzer, 'TVerifier
     and 'TAnalyzer :> DiagnosticAnalyzer
     and 'TVerifier: (new: unit -> 'TVerifier)
     and 'TVerifier :> IVerifier>
+    requiredDiagnosticIds
     (source: string)
     =
     let codeUnderTest = source.ReplaceLineEndings()
@@ -485,7 +518,7 @@ let VerifyStrictFlowAnalysisDiagnosticsAsync<'TAnalyzer, 'TVerifier
     task {
         let! equivalentCode, diagnosticResults, lineOffset = getExpectedDiagnostics source
 
-        ensureTestIsCorrect equivalentCode diagnosticResults nullableDiagnostics
+        ensureTestIsCorrect equivalentCode diagnosticResults nullableDiagnostics requiredDiagnosticIds
 
         let mappedDiagnosticResults =
             diagnosticResults

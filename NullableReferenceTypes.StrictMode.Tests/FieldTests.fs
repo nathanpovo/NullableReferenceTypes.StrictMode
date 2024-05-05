@@ -1,5 +1,6 @@
 namespace NullableReferenceTypes.StrictMode.Tests
 
+open AnalyzerTestFramework
 open Xunit
 
 type ``Field Tests``() =
@@ -65,6 +66,7 @@ public class NullableObliviousClass
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8601 ]
             $$"""
 #nullable enable
 
@@ -99,6 +101,7 @@ public class NullableObliviousClass
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8601; CS8618 ]
             $$"""
 #nullable enable
 
@@ -134,6 +137,7 @@ public class NullableObliviousClass
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8601 ]
             $$"""
 #nullable enable
 

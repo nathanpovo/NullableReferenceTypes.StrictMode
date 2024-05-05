@@ -1,5 +1,6 @@
 namespace NullableReferenceTypes.StrictMode.Tests
 
+open AnalyzerTestFramework
 open Xunit
 
 type ``Variable Tests``() =
@@ -169,6 +170,7 @@ public class NullableEnabledClass
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8600 ]
             $$"""
 #nullable enable
 
@@ -204,6 +206,7 @@ namespace TestApp
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8600 ]
             $$"""
 #nullable enable
 
@@ -240,6 +243,7 @@ namespace TestApp
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8600 ]
             $$"""
 #nullable enable
 
@@ -276,6 +280,7 @@ namespace TestApp
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8600 ]
             $$"""
 #nullable enable
 

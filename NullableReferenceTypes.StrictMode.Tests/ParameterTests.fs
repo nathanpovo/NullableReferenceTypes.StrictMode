@@ -1,5 +1,6 @@
 namespace NullableReferenceTypes.StrictMode.Tests
 
+open AnalyzerTestFramework
 open Xunit
 
 type ``Parameter Tests``() =
@@ -71,6 +72,7 @@ public class NullableObliviousClass
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8604 ]
             $$"""
 #nullable enable
 
@@ -105,6 +107,7 @@ public class NullableObliviousClass
     [<InlineData("string")>]
     let ``WHEN passing a null-oblivious property to non-null parameters SHOULD show diagnostics`` (objectType: string) =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8604 ]
             $$"""
 #nullable enable
 
@@ -139,6 +142,7 @@ public class NullableObliviousClass
     [<InlineData("string")>]
     let ``WHEN passing a null-oblivious field to a non-null parameter SHOULD show diagnostics`` (objectType: string) =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8604 ]
             $$"""
 #nullable enable
 
@@ -179,6 +183,7 @@ public class NullableObliviousClass
         (objectType: string, parameterType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8604 ]
             $$"""
 #nullable enable
 

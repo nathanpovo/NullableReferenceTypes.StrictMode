@@ -1,5 +1,6 @@
 namespace NullableReferenceTypes.StrictMode.Tests
 
+open AnalyzerTestFramework
 open Xunit
 
 type ``Strict NRT Flow Analysis Tests``() =
@@ -11,6 +12,7 @@ type ``Strict NRT Flow Analysis Tests``() =
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8602 ]
             $$"""
 #nullable enable
 
@@ -75,6 +77,7 @@ static class NullObliviousClass
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8602 ]
             $$"""
 #nullable enable
 
@@ -139,6 +142,7 @@ static class NullObliviousClass
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8602 ]
             $$"""
 #nullable enable
 
@@ -203,6 +207,7 @@ class ClassUnderTest
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8602 ]
             $$"""
 #nullable enable
 

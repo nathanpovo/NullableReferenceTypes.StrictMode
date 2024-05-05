@@ -1,5 +1,6 @@
 namespace NullableReferenceTypes.StrictMode.Tests
 
+open AnalyzerTestFramework
 open Xunit
 
 type ``Method Tests``() =
@@ -107,6 +108,7 @@ class ClassUnderTest
         (objectType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8600 ]
             $$"""
 #nullable enable
 

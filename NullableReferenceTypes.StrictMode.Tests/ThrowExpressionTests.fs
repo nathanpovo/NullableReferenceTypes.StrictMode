@@ -1,5 +1,6 @@
 namespace NullableReferenceTypes.StrictMode.Tests
 
+open AnalyzerTestFramework
 open Xunit
 
 type ``Throw Expression Tests``() =
@@ -30,6 +31,7 @@ class ClassUnderTest
         (exceptionType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8597 ]
             $$"""
 #nullable enable
 
@@ -62,6 +64,7 @@ static class NullObliviousClass
         (exceptionType: string)
         =
         NullableAnalyzerTests.VerifyStrictFlowAnalysisDiagnosticsAsync
+            [ CS8597 ]
             $$"""
 #nullable enable
 
