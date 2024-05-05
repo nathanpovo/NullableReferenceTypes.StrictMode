@@ -10,6 +10,7 @@ open Microsoft.CodeAnalysis.Diagnostics
 open Microsoft.CodeAnalysis.Testing
 open Microsoft.CodeAnalysis.Testing.Model
 open Microsoft.CodeAnalysis.Text
+open Microsoft.FSharp.Reflection
 
 // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings
 type DiagnosticId =
@@ -119,6 +120,13 @@ type DiagnosticId =
     | CS8825
     /// The switch expression does not handle some null inputs (it is not exhaustive). However, a pattern with a 'when' clause might successfully match this value.
     | CS8847
+
+let nullableDiagnostics =
+    FSharpType.GetUnionCases(typeof<DiagnosticId>)
+    |> Array.map (fun x -> FSharpValue.MakeUnion(x, [||]))
+    |> Array.map (fun x -> x :?> DiagnosticId)
+
+let nullableDiagnosticsAsString = nullableDiagnostics |> Array.map _.ToString()
 
 [<AutoOpen>]
 module private PrivateHelpers =
@@ -323,7 +331,13 @@ module private PrivateHelpers =
                 newLinePosition (lineSpan.EndLinePosition, lineDifference)
             )
 
-        DiagnosticResult("NRTSM_" + diagnostic.Id, diagnostic.Severity)
+        let mappedDiagnosticId =
+            if nullableDiagnosticsAsString |> Array.contains diagnostic.Id then
+                "NRTSM_" + diagnostic.Id
+            else
+                diagnostic.Id
+
+        DiagnosticResult(mappedDiagnosticId, diagnostic.Severity)
         |> _.WithMessage(diagnostic.GetMessage())
         |> _.WithIsSuppressed(diagnostic.IsSuppressed)
         |> _.WithSpan(newLineSpan)
