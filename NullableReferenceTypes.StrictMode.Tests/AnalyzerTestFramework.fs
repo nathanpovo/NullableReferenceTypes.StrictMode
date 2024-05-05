@@ -373,7 +373,11 @@ module private PrivateHelpers =
             return (equivalentCode, diagnosticResults, -amountOfNewLines)
         }
 
-    let ensureTestIsCorrect equivalentCode (diagnosticResults: DiagnosticResult array) =
+    let ensureTestIsCorrect
+        equivalentCode
+        (diagnosticResults: DiagnosticResult array)
+        (allowedDiagnostics: DiagnosticId seq)
+        =
         // Will only occur if the equivalent code was built incorrectly.
         // The equivalent code should always have diagnostics otherwise there would be no reason to test it.
         if diagnosticResults.Length = 0 then
@@ -382,6 +386,38 @@ module private PrivateHelpers =
                 + Environment.NewLine
                 + Environment.NewLine
                 + equivalentCode
+            )
+
+        let createEquivalentCodeMessage =
+            let codeMarkedWithDiagnostics =
+                lazy (markCodeWithDiagnostics equivalentCode diagnosticResults)
+
+            lazy
+                ("The equivalent code reported the following diagnostics:"
+                 + Environment.NewLine
+                 + Environment.NewLine
+                 + String.Join(Environment.NewLine, diagnosticResults)
+                 + Environment.NewLine
+                 + Environment.NewLine
+                 + codeMarkedWithDiagnostics.Value)
+
+        let distinctDiagnosticIds =
+            diagnosticResults |> Seq.map _.Id |> Seq.distinct |> Seq.sort |> Seq.cache
+
+        let notAllowed =
+            distinctDiagnosticIds
+            |> Seq.except (allowedDiagnostics |> Seq.map _.ToString() |> Seq.cache)
+            |> Seq.toArray
+
+        // This is to make the error message clearer in the case when the code under test reports unexpected diagnostics
+        if notAllowed.Length > 0 then
+            failwith (
+                "The following unexpected diagnostics were reported:"
+                + Environment.NewLine
+                + String.Join(Environment.NewLine, notAllowed)
+                + Environment.NewLine
+                + Environment.NewLine
+                + createEquivalentCodeMessage.Value
             )
 
 let VerifyNoDiagnosticAsync<'TAnalyzer, 'TVerifier
@@ -449,7 +485,7 @@ let VerifyStrictFlowAnalysisDiagnosticsAsync<'TAnalyzer, 'TVerifier
     task {
         let! equivalentCode, diagnosticResults, lineOffset = getExpectedDiagnostics source
 
-        ensureTestIsCorrect equivalentCode diagnosticResults
+        ensureTestIsCorrect equivalentCode diagnosticResults nullableDiagnostics
 
         let mappedDiagnosticResults =
             diagnosticResults
