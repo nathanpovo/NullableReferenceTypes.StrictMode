@@ -11,6 +11,115 @@ open Microsoft.CodeAnalysis.Testing
 open Microsoft.CodeAnalysis.Testing.Model
 open Microsoft.CodeAnalysis.Text
 
+// https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings
+type DiagnosticId =
+    /// Thrown value may be null.
+    | CS8597
+    /// Converting null literal or possible null value to non-nullable type.
+    | CS8600
+    /// Possible null reference assignment.
+    | CS8601
+    /// Dereference of a possibly null reference.
+    | CS8602
+    /// Possible null reference return.
+    | CS8603
+    /// Possible null reference argument for parameter.
+    | CS8604
+    /// Unboxing a possibly null value.
+    | CS8605
+    /// A possible null value may not be used for a type marked with [NotNull] or [DisallowNull]
+    | CS8607
+    /// Nullability of reference types in type doesn't match overridden member.
+    | CS8608
+    /// Nullability of reference types in return type doesn't match overridden member.
+    | CS8609
+    /// Nullability of reference types in type parameter doesn't match overridden member.
+    | CS8610
+    /// Nullability of reference types in type parameter doesn't match partial method declaration.
+    | CS8611
+    /// Nullability of reference types in type doesn't match implicitly implemented member.
+    | CS8612
+    /// Nullability of reference types in return type doesn't match implicitly implemented member.
+    | CS8613
+    /// Nullability of reference types in type of parameter doesn't match implicitly implemented member.
+    | CS8614
+    /// Nullability of reference types in type doesn't match implemented member.
+    | CS8615
+    /// Nullability of reference types in return type doesn't match implemented member.
+    | CS8616
+    /// Nullability of reference types in type of parameter doesn't match implemented member.
+    | CS8617
+    /// Non-nullable variable must contain a non-null value when exiting constructor. Consider declaring it as nullable.
+    | CS8618
+    /// Nullability of reference types in value doesn't match target type.
+    | CS8619
+    /// Argument cannot be used for parameter due to differences in the nullability of reference types.
+    | CS8620
+    /// Nullability of reference types in return type doesn't match the target delegate (possibly because of nullability attributes).
+    | CS8621
+    /// Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
+    | CS8622
+    /// Argument cannot be used as an output due to differences in the nullability of reference types.
+    | CS8624
+    /// Cannot convert null literal to non-nullable reference type.
+    | CS8625
+    /// Nullable value type may be null.
+    | CS8629
+    /// The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match constraint type.
+    | CS8631
+    /// Nullability in constraints for type parameter of method doesn't match the constraints for type parameter of interface method. Consider using an explicit interface implementation instead.
+    | CS8633
+    /// The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
+    | CS8634
+    /// Nullability of reference types in explicit interface specifier doesn't match interface implemented by the type.
+    | CS8643
+    /// Type does not implement interface member. Nullability of reference types in interface implemented by the base type doesn't match.
+    | CS8644
+    /// Member is already listed in the interface list on type with different nullability of reference types.
+    | CS8645
+    /// The switch expression does not handle some null inputs (it is not exhaustive).
+    | CS8655
+    /// Partial method declarations have inconsistent nullability in constraints for type parameter.
+    | CS8667
+    /// Object or collection initializer implicitly dereferences possibly null member.
+    | CS8670
+    /// The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
+    | CS8714
+    /// Parameter must have a non-null value when exiting.
+    | CS8762
+    /// A method marked [DoesNotReturn] should not return.
+    | CS8763
+    /// Nullability of return type doesn't match overridden member (possibly because of nullability attributes).
+    | CS8764
+    /// Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
+    | CS8765
+    /// Nullability of reference types in return type of doesn't match implicitly implemented member (possibly because of nullability attributes).
+    | CS8766
+    /// Nullability of reference types in type of parameter of doesn't match implicitly implemented member (possibly because of nullability attributes).
+    | CS8767
+    /// Nullability of reference types in return type doesn't match implemented member (possibly because of nullability attributes).
+    | CS8768
+    /// Nullability of reference types in type of parameter doesn't match implemented member (possibly because of nullability attributes).
+    | CS8769
+    /// Method lacks [DoesNotReturn] annotation to match implemented or overridden member.
+    | CS8770
+    /// Member must have a non-null value when exiting.
+    | CS8774
+    /// Member cannot be used in this attribute.
+    | CS8776
+    /// Member must have a non-null value when exiting.
+    | CS8775
+    /// Parameter must have a non-null value when exiting.
+    | CS8777
+    /// Nullability of reference types in return type doesn't match partial method declaration.
+    | CS8819
+    /// Parameter must have a non-null value when exiting because parameter is non-null.
+    | CS8824
+    /// Return value must be non-null because parameter is non-null.
+    | CS8825
+    /// The switch expression does not handle some null inputs (it is not exhaustive). However, a pattern with a 'when' clause might successfully match this value.
+    | CS8847
+
 [<AutoOpen>]
 module private PrivateHelpers =
     type NoDiagnosticsAnalyzerTest<'TAnalyzer, 'TVerifier
