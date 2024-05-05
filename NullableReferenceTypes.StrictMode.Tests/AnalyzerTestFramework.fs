@@ -318,6 +318,22 @@ module private PrivateHelpers =
 
         exn (message, innerException)
 
+    let withId id (original: DiagnosticResult) =
+        // This has to be done this way because DiagnosticResult does not provide any way of modifying the ID
+
+        let withoutSpans =
+            DiagnosticResult(id, original.Severity)
+                .WithMessage(original.Message)
+                .WithMessageFormat(original.MessageFormat)
+                .WithArguments(original.MessageArguments)
+                .WithOptions(original.Options)
+                .WithIsSuppressed(original.IsSuppressed)
+
+        original.Spans
+        |> Seq.fold
+            (fun (final: DiagnosticResult) location -> final.WithSpan(location.Span, location.Options))
+            withoutSpans
+
     let mapDiagnostic lineDifference (diagnostic: Diagnostic) =
         let lineSpan = diagnostic.Location.GetLineSpan()
 
@@ -331,16 +347,16 @@ module private PrivateHelpers =
                 newLinePosition (lineSpan.EndLinePosition, lineDifference)
             )
 
-        let mappedDiagnosticId =
-            if nullableDiagnosticsAsString |> Array.contains diagnostic.Id then
-                "NRTSM_" + diagnostic.Id
-            else
-                diagnostic.Id
-
-        DiagnosticResult(mappedDiagnosticId, diagnostic.Severity)
+        DiagnosticResult(diagnostic.Id, diagnostic.Severity)
         |> _.WithMessage(diagnostic.GetMessage())
         |> _.WithIsSuppressed(diagnostic.IsSuppressed)
         |> _.WithSpan(newLineSpan)
+
+    let mapDiagnosticId diagnosticId =
+        if nullableDiagnosticsAsString |> Array.contains diagnosticId then
+            "NRTSM_" + diagnosticId
+        else
+            diagnosticId
 
     let getDiagnostics source =
         DiagnosticGetter().GetDiagnostics(source, CancellationToken.None)
@@ -449,8 +465,12 @@ let VerifyStrictFlowAnalysisDiagnosticsAsync<'TAnalyzer, 'TVerifier
 
         ensureTestIsCorrect equivalentCode diagnosticResults
 
+        let mappedDiagnosticResults =
+            diagnosticResults
+            |> Array.map (fun diagnosticResult -> (diagnosticResult |> withId (mapDiagnosticId diagnosticResult.Id)))
+
         try
-            return! VerifyDiagnosticAsync<'TAnalyzer, 'TVerifier> codeUnderTest diagnosticResults
+            return! VerifyDiagnosticAsync<'TAnalyzer, 'TVerifier> codeUnderTest mappedDiagnosticResults
         with e ->
-            createAnalyserException e codeUnderTest diagnosticResults |> raise
+            createAnalyserException e codeUnderTest mappedDiagnosticResults |> raise
     }
