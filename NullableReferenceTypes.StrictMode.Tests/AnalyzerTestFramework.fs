@@ -9,7 +9,6 @@ open Microsoft.CodeAnalysis.CSharp.Testing
 open Microsoft.CodeAnalysis.Diagnostics
 open Microsoft.CodeAnalysis.Testing
 open Microsoft.CodeAnalysis.Testing.Model
-open Microsoft.CodeAnalysis.Text
 open Microsoft.FSharp.Reflection
 
 // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings
@@ -335,22 +334,11 @@ module private PrivateHelpers =
             withoutSpans
 
     let mapDiagnostic lineDifference (diagnostic: Diagnostic) =
-        let lineSpan = diagnostic.Location.GetLineSpan()
-
-        let newLinePosition (linePosition: LinePosition, lineDifference) =
-            LinePosition(linePosition.Line + lineDifference, linePosition.Character)
-
-        let newLineSpan =
-            FileLinePositionSpan(
-                lineSpan.Path,
-                newLinePosition (lineSpan.StartLinePosition, lineDifference),
-                newLinePosition (lineSpan.EndLinePosition, lineDifference)
-            )
-
         DiagnosticResult(diagnostic.Id, diagnostic.Severity)
         |> _.WithMessage(diagnostic.GetMessage())
         |> _.WithIsSuppressed(diagnostic.IsSuppressed)
-        |> _.WithSpan(newLineSpan)
+        |> _.WithSpan(diagnostic.Location.GetLineSpan())
+        |> _.WithLineOffset(lineDifference)
 
     let mapDiagnosticId diagnosticId =
         if nullableDiagnosticsAsString |> Array.contains diagnosticId then
