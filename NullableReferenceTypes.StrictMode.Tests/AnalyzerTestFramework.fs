@@ -138,7 +138,7 @@ module private PrivateHelpers =
                     |> Seq.toArray
             }
 
-    let createAnalyserException innerException (codeUnderTest: string) (expectedDiagnostics: DiagnosticResult[]) =
+    let markCodeWithDiagnostics (code: string) (diagnostics: DiagnosticResult seq) =
         let applyMarkersForDiagnostic (state: char array) startCharacter endCharacter =
             for i = startCharacter to (endCharacter - 1) do
                 state[i] <- '^'
@@ -172,10 +172,10 @@ module private PrivateHelpers =
         let insertDiagnostic (code: string array) line marker =
             code |> Array.insertAt (line + 1) marker
 
-        let splitCode = codeUnderTest.Split Environment.NewLine
+        let splitCode = code.Split Environment.NewLine
 
         let codeMarkedWithDiagnostics =
-            expectedDiagnostics
+            diagnostics
             |> Seq.filter (_.HasLocation)
             |> Seq.map (_.Spans[0].Span)
             |> Seq.groupBy (_.StartLinePosition.Line)
@@ -183,6 +183,12 @@ module private PrivateHelpers =
             |> Seq.sortByDescending (_.line)
             |> Seq.fold (fun state y -> insertDiagnostic state y.line y.marker) splitCode
             |> (fun x -> String.Join(Environment.NewLine, x))
+
+        codeMarkedWithDiagnostics
+
+    let createAnalyserException innerException (codeUnderTest: string) (expectedDiagnostics: DiagnosticResult[]) =
+        let codeMarkedWithDiagnostics =
+            markCodeWithDiagnostics codeUnderTest expectedDiagnostics
 
         let message =
             "Expected diagnostics:"
